@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  
+  /* Nor'easters Winter Storm Theme */
+  --storm-black: #0a0f14;
+  --storm-dark: #121a24;
+  --storm-navy: #1a2a3a;
+  --cerulean: #007ba7;
+  --cerulean-light: #00a3d9;
+  --cerulean-bright: #00c4ff;
+  --ice-white: #f0f8ff;
+  --frost: #e8f4fc;
+  --snow: #ffffff;
+}
+
+/* Snowflake animation keyframes */
+@keyframes snowfall {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) translateX(100px) rotate(720deg);
+    opacity: 0.3;
+  }
+}
+
+@keyframes snowfall-reverse {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) translateX(-100px) rotate(-720deg);
+    opacity: 0.3;
+  }
+}
+
+@keyframes wind-sway {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(30px);
+  }
+}
+
+@keyframes blizzard-gust {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  50% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%) skewX(-15deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.snowflake {
+  position: fixed;
+  top: -10vh;
+  color: white;
+  font-size: 1em;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  animation: snowfall linear infinite;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.snowflake:nth-child(odd) {
+  animation-name: snowfall-reverse;
+}
+
+.wind-streak {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: blizzard-gust 3s ease-in-out infinite;
+  pointer-events: none;
+}

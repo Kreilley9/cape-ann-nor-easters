@@ -1,0 +1,7 @@
+.env
+node_modules/
+dist/
+.wrangler/
+d1_dump.sql
+users.json
+public_asset_links.json
