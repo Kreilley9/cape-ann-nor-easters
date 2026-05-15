@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { 
   Database, Table, Search, Edit2, Trash2, Plus, Save, X, 
   ChevronLeft, ChevronRight, RefreshCw
 } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface TableInfo {
   name: string;
@@ -65,8 +66,7 @@ export default function PortalDatabaseAdmin() {
 
   const loadTables = async () => {
     try {
-      const response = await fetch("/api/portal/admin/tables", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/admin/tables", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -82,9 +82,9 @@ export default function PortalDatabaseAdmin() {
   const loadTableData = async () => {
     setTableLoading(true);
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/portal/admin/tables/${selectedTable}?page=${page}&pageSize=${pageSize}&search=${encodeURIComponent(searchQuery)}`,
-        { credentials: "include" }
+        { }
       );
       if (response.ok) {
         const data = await response.json();
@@ -102,54 +102,54 @@ export default function PortalDatabaseAdmin() {
   const loadLookupData = async () => {
     try {
       // Load families
-      const familiesRes = await fetch("/api/portal/families", { credentials: "include" });
+      const familiesRes = await apiFetch("/api/portal/families", { });
       if (familiesRes.ok) setFamilies(await familiesRes.json());
 
       // Load teams
-      const teamsRes = await fetch("/api/portal/teams", { credentials: "include" });
+      const teamsRes = await apiFetch("/api/portal/teams", { });
       if (teamsRes.ok) setTeams(await teamsRes.json());
 
       // Load seasons
-      const seasonsRes = await fetch("/api/portal/seasons", { credentials: "include" });
+      const seasonsRes = await apiFetch("/api/portal/seasons", { });
       if (seasonsRes.ok) setSeasons(await seasonsRes.json());
 
       // Load players
-      const playersRes = await fetch("/api/portal/players/all", { credentials: "include" });
+      const playersRes = await apiFetch("/api/portal/players/all", { });
       if (playersRes.ok) {
         const playersData = await playersRes.json();
         setPlayers(playersData.map((p: any) => ({ id: p.id, name: `${p.first_name} ${p.last_name}` })));
       }
 
       // Load events
-      const eventsRes = await fetch("/api/portal/events", { credentials: "include" });
+      const eventsRes = await apiFetch("/api/portal/events", { });
       if (eventsRes.ok) {
         const eventsData = await eventsRes.json();
         setEvents(eventsData.map((e: any) => ({ id: e.id, name: e.title })));
       }
 
       // Load payments
-      const paymentsRes = await fetch("/api/portal/payments", { credentials: "include" });
+      const paymentsRes = await apiFetch("/api/portal/payments", { });
       if (paymentsRes.ok) {
         const paymentsData = await paymentsRes.json();
         setPayments(paymentsData.map((p: any) => ({ id: p.id, name: p.description })));
       }
 
       // Load surveys
-      const surveysRes = await fetch("/api/portal/surveys", { credentials: "include" });
+      const surveysRes = await apiFetch("/api/portal/surveys", { });
       if (surveysRes.ok) {
         const surveysData = await surveysRes.json();
         setSurveys(surveysData.map((s: any) => ({ id: s.id, name: s.title })));
       }
 
       // Load raffles
-      const rafflesRes = await fetch("/api/portal/raffles", { credentials: "include" });
+      const rafflesRes = await apiFetch("/api/portal/raffles", { });
       if (rafflesRes.ok) {
         const rafflesData = await rafflesRes.json();
         setRaffles(rafflesData.map((r: any) => ({ id: r.id, name: r.title })));
       }
 
       // Load news posts
-      const newsRes = await fetch("/api/portal/news", { credentials: "include" });
+      const newsRes = await apiFetch("/api/portal/news", { });
       if (newsRes.ok) {
         const newsData = await newsRes.json();
         setNewsPosts(newsData.map((n: any) => ({ id: n.id, name: n.title })));
@@ -229,12 +229,11 @@ export default function PortalDatabaseAdmin() {
     if (!editingRow) return;
     setSaving(true);
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/portal/admin/tables/${selectedTable}/${editingRow.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify(editFormData),
         }
       );
@@ -273,10 +272,9 @@ export default function PortalDatabaseAdmin() {
   const saveAdd = async () => {
     setSaving(true);
     try {
-      const response = await fetch(`/api/portal/admin/tables/${selectedTable}`, {
+      const response = await apiFetch(`/api/portal/admin/tables/${selectedTable}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(addFormData),
       });
       if (response.ok) {
@@ -297,9 +295,8 @@ export default function PortalDatabaseAdmin() {
 
   const deleteRow = async (id: number) => {
     try {
-      const response = await fetch(`/api/portal/admin/tables/${selectedTable}/${id}`, {
+      const response = await apiFetch(`/api/portal/admin/tables/${selectedTable}/${id}`, {
         method: "DELETE",
-        credentials: "include",
       });
       if (response.ok) {
         setMessage({ type: "success", text: "Row deleted successfully" });

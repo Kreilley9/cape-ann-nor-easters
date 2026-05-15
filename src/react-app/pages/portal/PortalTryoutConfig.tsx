@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Save, Calendar, Settings } from "lucide-react";
 import { formatDateTime } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 export default function PortalTryoutConfig() {
   const [loading, setLoading] = useState(true);
@@ -18,8 +19,7 @@ export default function PortalTryoutConfig() {
 
   const loadConfig = async () => {
     try {
-      const response = await fetch("/api/portal/tryout-config", {
-        credentials: "include"
+      const response = await apiFetch("/api/portal/tryout-config", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -42,10 +42,9 @@ export default function PortalTryoutConfig() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const response = await fetch("/api/portal/tryout-config", {
+      const response = await apiFetch("/api/portal/tryout-config", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(config)
       });
 

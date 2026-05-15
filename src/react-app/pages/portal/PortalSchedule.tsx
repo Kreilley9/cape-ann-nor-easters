@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@getmocha/users-service/react";
+﻿import { useState, useEffect } from "react";
+import { useAuth } from "@/react-app/contexts/AuthContext";
 import { useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { useRoles } from "@/react-app/contexts/RoleContext";
@@ -24,6 +24,7 @@ import {
   Download,
 } from "lucide-react";
 import { formatTime as formatTimeET, formatDateCustom, formatDate as formatDateET } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Team {
   id: number;
@@ -101,7 +102,9 @@ export default function PortalSchedule() {
   const [subscription, setSubscription] = useState<{ token: string; subscription_url: string; team_ids: string | null } | null>(null);
   const [subscriptionLoading, setSubscriptionLoading] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
-  const [eventForm, setEventForm] = useState({
+  const [savingEvent, setSavingEvent] = useState(false);
+
+  const BLANK_EVENT_FORM = {
     team_id: "",
     event_type: "practice",
     title: "",
@@ -111,7 +114,8 @@ export default function PortalSchedule() {
     end_at: "",
     cost: "",
     player_ids: [] as number[],
-  });
+  };
+  const [eventForm, setEventForm] = useState(BLANK_EVENT_FORM);
 
   useEffect(() => {
     if (!isPending && !user) {
@@ -133,7 +137,7 @@ export default function PortalSchedule() {
 
   const checkAdminAndLoad = async () => {
     try {
-      const response = await fetch("/api/users/me");
+      const response = await apiFetch("/api/users/me");
       if (response.ok) {
         const data = await response.json();
         setIsAdmin(data.is_admin);
@@ -150,7 +154,7 @@ export default function PortalSchedule() {
 
   const loadTeams = async () => {
     try {
-      const response = await fetch("/api/portal/teams/all");
+      const response = await apiFetch("/api/portal/teams/all");
       if (response.ok) {
         const data = await response.json();
         setTeams(data);
@@ -163,8 +167,7 @@ export default function PortalSchedule() {
   const loadPlayers = async (teamId?: number) => {
     try {
       const url = teamId ? `/api/portal/teams/${teamId}/roster` : "/api/portal/players";
-      const response = await fetch(url, {
-        credentials: "include",
+      const response = await apiFetch(url, {
       });
       if (response.ok) {
         const data = await response.json();
@@ -191,7 +194,7 @@ export default function PortalSchedule() {
         url = `/api/portal/events?start=${startOfMonth.toISOString()}&end=${endOfMonth.toISOString()}`;
       }
       
-      const response = await fetch(url);
+      const response = await apiFetch(url);
       if (response.ok) {
         let data = await response.json();
         
@@ -223,17 +226,7 @@ export default function PortalSchedule() {
 
   const openCreateModal = () => {
     setEditingEvent(null);
-    setEventForm({
-      team_id: "",
-      event_type: "practice",
-      title: "",
-      description: "",
-      location: "",
-      start_at: "",
-      end_at: "",
-      cost: "",
-      player_ids: [],
-    });
+    setEventForm(BLANK_EVENT_FORM);
     setPlayers([]);
     setShowEventModal(true);
   };
@@ -254,7 +247,7 @@ export default function PortalSchedule() {
     
     // Load invited players for this event
     try {
-      const response = await fetch(`/api/portal/events/${event.id}/invites`);
+      const response = await apiFetch(`/api/portal/events/${event.id}/invites`);
       if (response.ok) {
         const invites = await response.json();
         setEventForm(prev => ({
@@ -294,6 +287,7 @@ export default function PortalSchedule() {
 
   const handleSaveEvent = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSavingEvent(true);
     try {
       const payload = {
         ...eventForm,
@@ -303,29 +297,33 @@ export default function PortalSchedule() {
       };
 
       if (editingEvent) {
-        await fetch(`/api/portal/events/${editingEvent.id}`, {
+        await apiFetch(`/api/portal/events/${editingEvent.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
       } else {
-        await fetch("/api/portal/events", {
+        await apiFetch("/api/portal/events", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
       }
       setShowEventModal(false);
+      setEventForm(BLANK_EVENT_FORM);
+      setEditingEvent(null);
       loadEvents();
     } catch (error) {
       console.error("Error saving event:", error);
+    } finally {
+      setSavingEvent(false);
     }
   };
 
   const handleDeleteEvent = async (eventId: number) => {
     if (!confirm("Are you sure you want to delete this event?")) return;
     try {
-      await fetch(`/api/portal/events/${eventId}`, { method: "DELETE" });
+      await apiFetch(`/api/portal/events/${eventId}`, { method: "DELETE" });
       loadEvents();
     } catch (error) {
       console.error("Error deleting event:", error);
@@ -338,8 +336,7 @@ export default function PortalSchedule() {
     setLoadingRSVPs(true);
     
     try {
-      const response = await fetch(`/api/portal/events/${event.id}/rsvps`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/events/${event.id}/rsvps`, {
       });
       if (response.ok) {
         const data = await response.json();
@@ -356,10 +353,9 @@ export default function PortalSchedule() {
     if (!selectedEvent) return;
     
     try {
-      const response = await fetch(`/api/portal/events/${selectedEvent.id}/rsvp/${playerId}`, {
+      const response = await apiFetch(`/api/portal/events/${selectedEvent.id}/rsvp/${playerId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ status }),
       });
       
@@ -375,7 +371,7 @@ export default function PortalSchedule() {
 
   const handleCancelEvent = async (eventId: number, cancelled: boolean) => {
     try {
-      await fetch(`/api/portal/events/${eventId}`, {
+      await apiFetch(`/api/portal/events/${eventId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ is_cancelled: cancelled }),
@@ -441,8 +437,7 @@ export default function PortalSchedule() {
 
   const loadSubscription = async () => {
     try {
-      const response = await fetch("/api/portal/calendar-subscription", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/calendar-subscription", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -458,10 +453,9 @@ export default function PortalSchedule() {
   const handleCreateSubscription = async () => {
     setSubscriptionLoading(true);
     try {
-      const response = await fetch("/api/portal/calendar-subscription", {
+      const response = await apiFetch("/api/portal/calendar-subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           name: "My Team Calendar",
           team_ids: selectedTeamIds.length > 0 ? selectedTeamIds.join(',') : null,
@@ -495,9 +489,8 @@ export default function PortalSchedule() {
     }
     
     try {
-      await fetch("/api/portal/calendar-subscription", {
+      await apiFetch("/api/portal/calendar-subscription", {
         method: "DELETE",
-        credentials: "include",
       });
       setSubscription(null);
       setShowSubscriptionModal(false);
@@ -1032,16 +1025,17 @@ export default function PortalSchedule() {
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowEventModal(false)}
+                  onClick={() => { setShowEventModal(false); setEventForm(BLANK_EVENT_FORM); setEditingEvent(null); }}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-white/5 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-[#00c4ff] hover:bg-[#00a3d9] shadow-lg shadow-[#00c4ff]/20 text-white rounded-lg font-medium transition-colors"
+                  disabled={savingEvent}
+                  className="flex-1 px-4 py-2 bg-[#00c4ff] hover:bg-[#00a3d9] shadow-lg shadow-[#00c4ff]/20 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {editingEvent ? "Save Changes" : "Create Event"}
+                  {savingEvent ? "Saving..." : editingEvent ? "Save Changes" : "Create Event"}
                 </button>
               </div>
             </form>

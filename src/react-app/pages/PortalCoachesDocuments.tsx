@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { Upload, Download, Trash2, FileText, FolderOpen, ArrowLeft } from "lucide-react";
 import { formatDate } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface CoachesDocument {
   id: number;
@@ -46,8 +47,7 @@ export function PortalCoachesDocuments() {
 
   async function loadDocuments() {
     try {
-      const response = await fetch("/api/portal/coaches/documents", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/coaches/documents", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -72,9 +72,8 @@ export function PortalCoachesDocuments() {
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      const uploadResponse = await fetch("/api/portal/coaches/documents/upload", {
+      const uploadResponse = await apiFetch("/api/portal/coaches/documents/upload", {
         method: "POST",
-        credentials: "include",
         body: formData,
       });
 
@@ -85,9 +84,8 @@ export function PortalCoachesDocuments() {
       const { file_key } = await uploadResponse.json();
 
       // Create document record
-      const createResponse = await fetch("/api/portal/coaches/documents", {
+      const createResponse = await apiFetch("/api/portal/coaches/documents", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title.trim(),
@@ -116,9 +114,8 @@ export function PortalCoachesDocuments() {
     if (!confirm(`Delete "${doc.title}"?`)) return;
 
     try {
-      const response = await fetch(`/api/portal/coaches/documents/${doc.id}`, {
+      const response = await apiFetch(`/api/portal/coaches/documents/${doc.id}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {
@@ -131,9 +128,9 @@ export function PortalCoachesDocuments() {
 
   async function handleDownload(doc: CoachesDocument) {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/portal/coaches/documents/download/${doc.file_key}`,
-        { credentials: "include" }
+        { }
       );
       if (response.ok) {
         const blob = await response.blob();

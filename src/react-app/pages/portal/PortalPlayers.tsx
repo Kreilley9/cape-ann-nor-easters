@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Plus, X, Edit2, Search, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { useRoles } from "@/react-app/contexts/RoleContext";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Player {
   id: number;
@@ -172,8 +173,7 @@ export default function PortalPlayers() {
 
   const loadPlayers = async () => {
     try {
-      const response = await fetch("/api/portal/players/all", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/players/all", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -187,8 +187,7 @@ export default function PortalPlayers() {
 
   const loadFamilies = async () => {
     try {
-      const response = await fetch("/api/portal/families", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/families", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -203,10 +202,9 @@ export default function PortalPlayers() {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/portal/players", {
+      const response = await apiFetch("/api/portal/players", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(newPlayerForm),
       });
 
@@ -247,8 +245,7 @@ export default function PortalPlayers() {
       await loadFamilies();
 
       // Fetch complete player details
-      const response = await fetch(`/api/portal/players/${player.id}`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/players/${player.id}`, {
       });
       
       if (!response.ok) {
@@ -292,10 +289,9 @@ export default function PortalPlayers() {
     if (!editingPlayer) return;
 
     try {
-      const response = await fetch(`/api/portal/players/${editingPlayer.id}`, {
+      const response = await apiFetch(`/api/portal/players/${editingPlayer.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(editingPlayer),
       });
 
@@ -313,10 +309,9 @@ export default function PortalPlayers() {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/portal/families", {
+      const response = await apiFetch("/api/portal/families", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(newFamilyForm),
       });
 
@@ -348,9 +343,8 @@ export default function PortalPlayers() {
     if (!deleteConfirmPlayer) return;
 
     try {
-      const response = await fetch(`/api/portal/players/${deleteConfirmPlayer.id}`, {
+      const response = await apiFetch(`/api/portal/players/${deleteConfirmPlayer.id}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {

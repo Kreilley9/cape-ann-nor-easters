@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { useRoles } from "@/react-app/contexts/RoleContext";
 import { Plus, UserPlus, X, Edit2, Trash2, Upload, FileText, Download, MessageSquare, Send, Pin, Clock, MessageCircle } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Team {
   id: number;
@@ -160,9 +161,9 @@ function PortalTeams() {
 
   async function handleDownloadDocument(doc: Document) {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/portal/teams/documents/download/${doc.file_key}`,
-        { credentials: "include" }
+        { }
       );
       if (response.ok) {
         const blob = await response.blob();
@@ -193,8 +194,7 @@ function PortalTeams() {
 
   const checkAdminAndLoad = async () => {
     try {
-      const adminResponse = await fetch("/api/portal/admin-check", {
-        credentials: "include",
+      const adminResponse = await apiFetch("/api/portal/admin-check", {
       });
       if (adminResponse.ok) {
         const adminData = await adminResponse.json();
@@ -208,8 +208,7 @@ function PortalTeams() {
 
   const loadTeams = async () => {
     try {
-      const response = await fetch("/api/portal/teams/all", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/teams/all", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -222,8 +221,7 @@ function PortalTeams() {
 
   const loadRoster = async (teamId: number) => {
     try {
-      const response = await fetch(`/api/portal/teams/${teamId}/roster`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/teams/${teamId}/roster`, {
       });
       if (response.ok) {
         const data = await response.json();
@@ -236,8 +234,7 @@ function PortalTeams() {
 
   const loadCoaches = async (teamId: number) => {
     try {
-      const response = await fetch(`/api/portal/teams/${teamId}/coaches`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/teams/${teamId}/coaches`, {
       });
       if (response.ok) {
         const data = await response.json();
@@ -261,8 +258,7 @@ function PortalTeams() {
 
   const loadTeamSeasons = async (teamId: number) => {
     try {
-      const response = await fetch(`/api/portal/teams/${teamId}/seasons`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/teams/${teamId}/seasons`, {
       });
       if (response.ok) {
         const data = await response.json();
@@ -277,10 +273,9 @@ function PortalTeams() {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/portal/teams", {
+      const response = await apiFetch("/api/portal/teams", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(newTeamForm),
       });
 
@@ -310,8 +305,7 @@ function PortalTeams() {
 
   const loadAllPlayers = async () => {
     try {
-      const response = await fetch("/api/portal/players/all", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/players/all", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -330,8 +324,7 @@ function PortalTeams() {
   const handleEditPlayerClick = async (player: Player) => {
     try {
       // Load families first
-      const familiesResponse = await fetch("/api/portal/families", {
-        credentials: "include",
+      const familiesResponse = await apiFetch("/api/portal/families", {
       });
       if (familiesResponse.ok) {
         const familiesData = await familiesResponse.json();
@@ -339,8 +332,7 @@ function PortalTeams() {
       }
 
       // Fetch complete player details
-      const playerResponse = await fetch(`/api/portal/players/${player.id}`, {
-        credentials: "include",
+      const playerResponse = await apiFetch(`/api/portal/players/${player.id}`, {
       });
       
       if (playerResponse.ok) {
@@ -358,10 +350,9 @@ function PortalTeams() {
     if (!editingPlayer) return;
 
     try {
-      const response = await fetch(`/api/portal/players/${editingPlayer.id}`, {
+      const response = await apiFetch(`/api/portal/players/${editingPlayer.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(editingPlayer),
       });
 
@@ -381,10 +372,9 @@ function PortalTeams() {
     if (!selectedTeam || selectedPlayerId === 0) return;
 
     try {
-      const response = await fetch("/api/portal/team-players", {
+      const response = await apiFetch("/api/portal/team-players", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ 
           team_id: selectedTeam.id,
           player_id: selectedPlayerId 
@@ -407,10 +397,9 @@ function PortalTeams() {
 
     try {
       // Create new player
-      const createResponse = await fetch("/api/portal/players", {
+      const createResponse = await apiFetch("/api/portal/players", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(newPlayerForm),
       });
 
@@ -418,10 +407,9 @@ function PortalTeams() {
         const { id } = await createResponse.json();
 
         // Add player to team
-        const addResponse = await fetch("/api/portal/team-players", {
+        const addResponse = await apiFetch("/api/portal/team-players", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify({ 
             team_id: selectedTeam.id,
             player_id: id 
@@ -463,8 +451,7 @@ function PortalTeams() {
 
   const loadFamilies = async () => {
     try {
-      const response = await fetch("/api/portal/families", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/families", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -479,10 +466,9 @@ function PortalTeams() {
     e.preventDefault();
     
     try {
-      const response = await fetch("/api/portal/families", {
+      const response = await apiFetch("/api/portal/families", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(newFamilyForm),
       });
 
@@ -512,10 +498,9 @@ function PortalTeams() {
     if (!selectedTeam) return;
 
     try {
-      const response = await fetch(`/api/portal/teams/${selectedTeam.id}/coaches`, {
+      const response = await apiFetch(`/api/portal/teams/${selectedTeam.id}/coaches`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(newCoachForm),
       });
 
@@ -539,10 +524,9 @@ function PortalTeams() {
     if (!editingCoach) return;
 
     try {
-      const response = await fetch(`/api/portal/team-coaches/${editingCoach.id}`, {
+      const response = await apiFetch(`/api/portal/team-coaches/${editingCoach.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           name: editingCoach.name,
           title: editingCoach.title,
@@ -567,9 +551,8 @@ function PortalTeams() {
     if (!selectedTeam || !confirm("Are you sure you want to remove this coach?")) return;
 
     try {
-      const response = await fetch(`/api/portal/team-coaches/${coachId}`, {
+      const response = await apiFetch(`/api/portal/team-coaches/${coachId}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {
@@ -588,8 +571,7 @@ function PortalTeams() {
 
   const loadDocuments = async (teamId: number) => {
     try {
-      const response = await fetch(`/api/portal/teams/${teamId}/documents`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/teams/${teamId}/documents`, {
       });
       if (response.ok) {
         const data = await response.json();
@@ -610,9 +592,8 @@ function PortalTeams() {
       formData.append("title", uploadForm.title);
       formData.append("description", uploadForm.description);
 
-      const response = await fetch(`/api/portal/teams/${selectedTeam.id}/documents`, {
+      const response = await apiFetch(`/api/portal/teams/${selectedTeam.id}/documents`, {
         method: "POST",
-        credentials: "include",
         body: formData,
       });
 
@@ -634,9 +615,8 @@ function PortalTeams() {
     if (!selectedTeam || !confirm("Are you sure you want to delete this document?")) return;
 
     try {
-      const response = await fetch(`/api/portal/documents/${docId}`, {
+      const response = await apiFetch(`/api/portal/documents/${docId}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {
@@ -650,8 +630,7 @@ function PortalTeams() {
   // Message board functions
   const loadMessages = async (teamId: number) => {
     try {
-      const response = await fetch(`/api/portal/teams/${teamId}/messages`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/teams/${teamId}/messages`, {
       });
       if (response.ok) {
         const data = await response.json();
@@ -667,10 +646,9 @@ function PortalTeams() {
 
     setSubmittingMessage(true);
     try {
-      const response = await fetch(`/api/portal/teams/${selectedTeam.id}/messages`, {
+      const response = await apiFetch(`/api/portal/teams/${selectedTeam.id}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           title: messageTitle.trim(),
           content: messageContent.trim(),
@@ -695,8 +673,7 @@ function PortalTeams() {
 
     setSelectedMessage(message);
     try {
-      const response = await fetch(`/api/portal/teams/${selectedTeam.id}/messages/${message.id}`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/teams/${selectedTeam.id}/messages/${message.id}`, {
       });
       if (response.ok) {
         const data = await response.json();
@@ -713,12 +690,11 @@ function PortalTeams() {
 
     setSubmittingReply(true);
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/portal/teams/${selectedTeam.id}/messages/${selectedMessage.id}/replies`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify({ content: replyContent.trim() }),
         }
       );
@@ -739,11 +715,10 @@ function PortalTeams() {
     if (!selectedTeam) return;
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/portal/teams/${selectedTeam.id}/messages/${messageId}/pin`,
         {
           method: "PUT",
-          credentials: "include",
         }
       );
 
@@ -762,11 +737,10 @@ function PortalTeams() {
     if (!selectedTeam || !confirm("Delete this message and all replies?")) return;
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/portal/teams/${selectedTeam.id}/messages/${messageId}`,
         {
           method: "DELETE",
-          credentials: "include",
         }
       );
 

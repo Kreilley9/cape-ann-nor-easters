@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { Plus, Copy, Trash2, Send, Check } from "lucide-react";
 import { formatDate } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Invite {
   id: number;
@@ -51,9 +52,9 @@ export default function PortalInvites() {
   const loadData = async () => {
     try {
       const [invitesRes, teamsRes, familiesRes] = await Promise.all([
-        fetch("/api/portal/invites", { credentials: "include" }),
-        fetch("/api/portal/teams", { credentials: "include" }),
-        fetch("/api/portal/families", { credentials: "include" }),
+        apiFetch("/api/portal/invites", { }),
+        apiFetch("/api/portal/teams", { }),
+        apiFetch("/api/portal/families", { }),
       ]);
 
       if (invitesRes.ok) setInvites(await invitesRes.json());
@@ -70,10 +71,9 @@ export default function PortalInvites() {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/portal/invites", {
+      const response = await apiFetch("/api/portal/invites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(formData),
       });
 
@@ -97,9 +97,8 @@ export default function PortalInvites() {
     if (!confirm("Are you sure you want to delete this invite?")) return;
 
     try {
-      const response = await fetch(`/api/portal/invites/${id}`, {
+      const response = await apiFetch(`/api/portal/invites/${id}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {
@@ -112,9 +111,8 @@ export default function PortalInvites() {
 
   const handleResendInvite = async (id: number) => {
     try {
-      const response = await fetch(`/api/portal/invites/${id}/resend`, {
+      const response = await apiFetch(`/api/portal/invites/${id}/resend`, {
         method: "POST",
-        credentials: "include",
       });
 
       if (response.ok) {

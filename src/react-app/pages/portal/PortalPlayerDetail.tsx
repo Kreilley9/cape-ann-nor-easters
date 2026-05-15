@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { ArrowLeft, Upload, Calendar, DollarSign, ShoppingBag } from "lucide-react";
 import { formatDate, formatTime } from "@/react-app/utils/dateFormat";
 import { PhoneLink, TextLink, EmailLink, ContactLinksRow } from "@/react-app/components/ContactLinks";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Player {
   id: number;
@@ -101,8 +102,7 @@ export default function PortalPlayerDetail() {
       setLoading(true);
       
       // Load player details
-      const playerRes = await fetch(`/api/portal/players/${id}`, {
-        credentials: "include"
+      const playerRes = await apiFetch(`/api/portal/players/${id}`, {
       });
       if (playerRes.ok) {
         const playerData = await playerRes.json();
@@ -110,8 +110,7 @@ export default function PortalPlayerDetail() {
       }
 
       // Load upcoming events
-      const upcomingRes = await fetch(`/api/portal/players/${id}/events/upcoming`, {
-        credentials: "include"
+      const upcomingRes = await apiFetch(`/api/portal/players/${id}/events/upcoming`, {
       });
       if (upcomingRes.ok) {
         const eventsData = await upcomingRes.json();
@@ -119,8 +118,7 @@ export default function PortalPlayerDetail() {
       }
 
       // Load past events
-      const pastRes = await fetch(`/api/portal/players/${id}/events/past`, {
-        credentials: "include"
+      const pastRes = await apiFetch(`/api/portal/players/${id}/events/past`, {
       });
       if (pastRes.ok) {
         const eventsData = await pastRes.json();
@@ -128,8 +126,7 @@ export default function PortalPlayerDetail() {
       }
 
       // Load payments
-      const paymentsRes = await fetch(`/api/portal/players/${id}/payments`, {
-        credentials: "include"
+      const paymentsRes = await apiFetch(`/api/portal/players/${id}/payments`, {
       });
       if (paymentsRes.ok) {
         const paymentsData = await paymentsRes.json();
@@ -137,8 +134,7 @@ export default function PortalPlayerDetail() {
       }
 
       // Load uniform orders
-      const ordersRes = await fetch(`/api/portal/players/${id}/uniform-orders`, {
-        credentials: "include"
+      const ordersRes = await apiFetch(`/api/portal/players/${id}/uniform-orders`, {
       });
       if (ordersRes.ok) {
         const ordersData = await ordersRes.json();
@@ -173,9 +169,8 @@ export default function PortalPlayerDetail() {
       const formData = new FormData();
       formData.append("photo", file);
 
-      const response = await fetch(`/api/portal/players/${id}/photo`, {
+      const response = await apiFetch(`/api/portal/players/${id}/photo`, {
         method: "POST",
-        credentials: "include",
         body: formData,
       });
 
@@ -232,7 +227,7 @@ export default function PortalPlayerDetail() {
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b border-[#00c4ff]/20">
-                <h3 className="text-lg font-semibold text-white font-[Oswald]">Photo</h3>
+                <h3 className="text-lg font-semibold text-gray-900 font-[Oswald]">Photo</h3>
               </div>
               <div className="p-6 flex flex-col items-center space-y-4">
                 {photoUrl ? (
@@ -262,7 +257,7 @@ export default function PortalPlayerDetail() {
 
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b border-[#00c4ff]/20">
-                <h3 className="text-lg font-semibold text-white font-[Oswald]">Quick Stats</h3>
+                <h3 className="text-lg font-semibold text-gray-900 font-[Oswald]">Quick Stats</h3>
               </div>
               <div className="p-6 space-y-3">
                 <div className="flex items-center justify-between">
@@ -291,7 +286,7 @@ export default function PortalPlayerDetail() {
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b border-[#00c4ff]/20">
-                <h3 className="text-lg font-semibold text-white font-[Oswald]">Player Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 font-[Oswald]">Player Information</h3>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-2 gap-4">
@@ -329,7 +324,7 @@ export default function PortalPlayerDetail() {
 
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b border-[#00c4ff]/20">
-                <h3 className="text-lg font-semibold text-white font-[Oswald]">Address</h3>
+                <h3 className="text-lg font-semibold text-gray-900 font-[Oswald]">Address</h3>
               </div>
               <div className="p-6">
                 <div className="space-y-2">
@@ -346,7 +341,7 @@ export default function PortalPlayerDetail() {
 
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b border-[#00c4ff]/20">
-                <h3 className="text-lg font-semibold text-white font-[Oswald]">Parent Contact Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 font-[Oswald]">Parent Contact Information</h3>
               </div>
               <div className="p-6">
                 <div className="space-y-6">
@@ -400,7 +395,7 @@ export default function PortalPlayerDetail() {
             {player.notes && (
               <div className="bg-white rounded-lg shadow">
                 <div className="p-6 border-b border-[#00c4ff]/20">
-                  <h3 className="text-lg font-semibold text-white font-[Oswald]">Notes</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 font-[Oswald]">Notes</h3>
                 </div>
                 <div className="p-6">
                   <p className="text-sm whitespace-pre-wrap">{player.notes}</p>
@@ -414,7 +409,7 @@ export default function PortalPlayerDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           <div className="bg-white rounded-lg shadow">
             <div className="p-6 border-b border-[#00c4ff]/20">
-              <h3 className="text-lg font-semibold text-white font-[Oswald] flex items-center">
+              <h3 className="text-lg font-semibold text-gray-900 font-[Oswald] flex items-center">
                 <Calendar className="mr-2 h-5 w-5" />
                 Upcoming Events
               </h3>
@@ -456,7 +451,7 @@ export default function PortalPlayerDetail() {
 
           <div className="bg-white rounded-lg shadow">
             <div className="p-6 border-b border-[#00c4ff]/20">
-              <h3 className="text-lg font-semibold text-white font-[Oswald] flex items-center">
+              <h3 className="text-lg font-semibold text-gray-900 font-[Oswald] flex items-center">
                 <Calendar className="mr-2 h-5 w-5" />
                 Past Events
               </h3>
@@ -499,7 +494,7 @@ export default function PortalPlayerDetail() {
         {/* Payments Section */}
         <div className="bg-white rounded-lg shadow mt-6">
           <div className="p-6 border-b border-[#00c4ff]/20">
-            <h3 className="text-lg font-semibold text-white font-[Oswald] flex items-center">
+            <h3 className="text-lg font-semibold text-gray-900 font-[Oswald] flex items-center">
               <DollarSign className="mr-2 h-5 w-5" />
               Payments & Fees
             </h3>
@@ -546,7 +541,7 @@ export default function PortalPlayerDetail() {
         {/* Uniform Orders Section */}
         <div className="bg-white rounded-lg shadow mt-6">
           <div className="p-6 border-b border-[#00c4ff]/20">
-            <h3 className="text-lg font-semibold text-white font-[Oswald] flex items-center">
+            <h3 className="text-lg font-semibold text-gray-900 font-[Oswald] flex items-center">
               <ShoppingBag className="mr-2 h-5 w-5" />
               Uniform Order History
             </h3>

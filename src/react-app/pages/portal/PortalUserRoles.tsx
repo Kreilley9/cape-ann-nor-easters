@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Shield, Plus, Trash2, Users, X, Edit } from "lucide-react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { formatDate } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface UserRole {
   id: number;
@@ -51,9 +52,9 @@ export default function PortalUserRoles() {
     setLoading(true);
     try {
       const [rolesRes, teamsRes, familiesRes] = await Promise.all([
-        fetch("/api/portal/user-roles", { credentials: "include" }),
-        fetch("/api/portal/teams", { credentials: "include" }),
-        fetch("/api/portal/families", { credentials: "include" }),
+        apiFetch("/api/portal/user-roles", { }),
+        apiFetch("/api/portal/teams", { }),
+        apiFetch("/api/portal/families", { }),
       ]);
 
       if (rolesRes.ok) {
@@ -81,10 +82,9 @@ export default function PortalUserRoles() {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/portal/user-roles", {
+      const response = await apiFetch("/api/portal/user-roles", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(formData),
       });
 
@@ -124,10 +124,9 @@ export default function PortalUserRoles() {
     if (!editingRole) return;
 
     try {
-      const response = await fetch(`/api/portal/user-roles/${editingRole.id}`, {
+      const response = await apiFetch(`/api/portal/user-roles/${editingRole.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(formData),
       });
 
@@ -153,9 +152,8 @@ export default function PortalUserRoles() {
     if (!confirm("Remove this role assignment?")) return;
 
     try {
-      const response = await fetch(`/api/portal/user-roles/${id}`, {
+      const response = await apiFetch(`/api/portal/user-roles/${id}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {

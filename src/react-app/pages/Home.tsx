@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "@getmocha/users-service/react";
+import { useAuth } from "@/react-app/contexts/AuthContext";
 import { useNavigate } from "react-router";
 import { Loader2, Calendar, Users } from "lucide-react";
 import type { Board } from "@/shared/types";

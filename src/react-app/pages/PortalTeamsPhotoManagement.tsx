@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { Upload, Trash2 } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Team {
   id: number;
@@ -21,8 +22,7 @@ export default function PortalTeamsPhotoManagement() {
 
   const loadTeams = async () => {
     try {
-      const response = await fetch("/api/public/teams", {
-        credentials: "include",
+      const response = await apiFetch("/api/public/teams", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -45,9 +45,8 @@ export default function PortalTeamsPhotoManagement() {
       const uploadData = new FormData();
       uploadData.append("photo", file);
 
-      const uploadResponse = await fetch("/api/public/teams/upload-photo", {
+      const uploadResponse = await apiFetch("/api/public/teams/upload-photo", {
         method: "POST",
-        credentials: "include",
         body: uploadData,
       });
 
@@ -58,10 +57,9 @@ export default function PortalTeamsPhotoManagement() {
       const { photo_key } = await uploadResponse.json();
 
       // Update the team with the new photo
-      const updateResponse = await fetch(`/api/public/teams/${teamId}/photo`, {
+      const updateResponse = await apiFetch(`/api/public/teams/${teamId}/photo`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ photo_key }),
       });
 
@@ -82,10 +80,9 @@ export default function PortalTeamsPhotoManagement() {
     if (!confirm("Are you sure you want to remove this team photo?")) return;
 
     try {
-      const response = await fetch(`/api/public/teams/${teamId}/photo`, {
+      const response = await apiFetch(`/api/public/teams/${teamId}/photo`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ photo_key: null }),
       });
 

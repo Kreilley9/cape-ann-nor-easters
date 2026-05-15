@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { ArrowLeft, Download } from "lucide-react";
 import { formatDateTime, formatDate } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Question {
   id: number;
@@ -51,8 +52,7 @@ export default function PortalSurveyResults() {
 
   async function loadResults() {
     try {
-      const response = await fetch(`/api/portal/surveys/${id}/results`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/surveys/${id}/results`, {
       });
       if (response.ok) {
         const results = await response.json();

@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@getmocha/users-service/react";
+﻿import { useState, useEffect } from "react";
+import { useAuth } from "@/react-app/contexts/AuthContext";
 import { useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { Loader2, Calendar, MapPin, Clock, DollarSign, CheckCircle, XCircle, HelpCircle } from "lucide-react";
 import { formatTime as formatTimeET, formatDateCustom } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Player {
   id: number;
@@ -47,8 +48,8 @@ export default function PortalRSVP() {
   const loadData = async () => {
     try {
       const [eventsRes, playersRes] = await Promise.all([
-        fetch("/api/portal/my-events", { credentials: "include" }),
-        fetch("/api/portal/my-players", { credentials: "include" }),
+        apiFetch("/api/portal/my-events", { }),
+        apiFetch("/api/portal/my-players", { }),
       ]);
 
       if (!eventsRes.ok) {
@@ -61,8 +62,6 @@ export default function PortalRSVP() {
       if (eventsRes.ok && playersRes.ok) {
         const eventsData = await eventsRes.json();
         const playersData = await playersRes.json();
-        console.log("Loaded events:", eventsData);
-        console.log("Loaded players:", playersData);
         setEvents(eventsData);
         setPlayers(playersData);
       }
@@ -78,7 +77,7 @@ export default function PortalRSVP() {
     setSubmitting({ ...submitting, [key]: true });
 
     try {
-      const response = await fetch(`/api/portal/events/${eventId}/rsvp/${playerId}`, {
+      const response = await apiFetch(`/api/portal/events/${eventId}/rsvp/${playerId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),

@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router";
-import { useAuth } from "@getmocha/users-service/react";
+import { useAuth } from "@/react-app/contexts/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import { useRoles } from "@/react-app/contexts/RoleContext";
 import {
@@ -50,25 +50,22 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   const { isAdmin, isCoach, isParent } = useRoles();
   const navRef = useRef<HTMLDivElement>(null);
 
-  // Save scroll position to sessionStorage on scroll
   useEffect(() => {
     const nav = navRef.current;
     if (nav) {
       const handleScroll = () => {
-        sessionStorage.setItem('portalSidebarScroll', nav.scrollTop.toString());
+        sessionStorage.setItem("portalSidebarScroll", nav.scrollTop.toString());
       };
-      nav.addEventListener('scroll', handleScroll);
-      return () => nav.removeEventListener('scroll', handleScroll);
+      nav.addEventListener("scroll", handleScroll);
+      return () => nav.removeEventListener("scroll", handleScroll);
     }
   }, []);
 
-  // Restore scroll position from sessionStorage after navigation
   useEffect(() => {
     const nav = navRef.current;
     if (nav) {
-      const savedScroll = sessionStorage.getItem('portalSidebarScroll');
+      const savedScroll = sessionStorage.getItem("portalSidebarScroll");
       if (savedScroll) {
-        // Use requestAnimationFrame to ensure DOM is ready
         requestAnimationFrame(() => {
           nav.scrollTop = parseInt(savedScroll, 10);
         });
@@ -81,8 +78,6 @@ export function PortalLayout({ children }: PortalLayoutProps) {
     navigate("/");
   };
 
-  // Navigation items with role-based access
-  // If no roles specified, item is visible to all authenticated users
   const navigation: NavItem[] = [
     { name: "Dashboard", href: "/portal", icon: LayoutDashboard },
     { name: "My Events", href: "/portal/rsvp", icon: CheckSquare },
@@ -119,9 +114,8 @@ export function PortalLayout({ children }: PortalLayoutProps) {
     { name: "Squares Admin", href: "/admin", icon: Users },
   ];
 
-  // Filter navigation items based on user roles
   const canSeeNavItem = (item: NavItem): boolean => {
-    if (!item.roles) return true; // No role restriction
+    if (!item.roles) return true;
     if (isAdmin && item.roles.includes("admin")) return true;
     if (isCoach && item.roles.includes("coach")) return true;
     if (isParent && item.roles.includes("parent")) return true;
@@ -130,7 +124,6 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
   const filteredNavigation = navigation.filter(canSeeNavItem);
 
-  // Role badge to display under username
   const getRoleBadge = () => {
     if (isAdmin) return { text: "Admin", color: "text-blue-600" };
     if (isCoach) return { text: "Coach", color: "text-green-600" };
@@ -146,7 +139,6 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(135deg, #0a0f14 0%, #121a24 50%, #1a2a3a 100%)" }}>
-      {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 lg:hidden"
@@ -154,7 +146,6 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0 z-50 h-full w-64 transform transition-transform duration-200 lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -162,7 +153,6 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         style={{ background: "linear-gradient(180deg, #0a0f14 0%, #121a24 100%)" }}
       >
         <div className="flex flex-col h-full border-r border-[#00c4ff]/20">
-          {/* Logo */}
           <div className="flex items-center justify-between px-4 py-4 border-b border-[#00c4ff]/20">
             <Link to="/" className="flex items-center gap-3">
               <img
@@ -183,7 +173,6 @@ export function PortalLayout({ children }: PortalLayoutProps) {
             </button>
           </div>
 
-          {/* Navigation */}
           <nav ref={navRef} className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
             {filteredNavigation.map((item) => {
               const active = isActive(item.href);
@@ -261,7 +250,6 @@ export function PortalLayout({ children }: PortalLayoutProps) {
             )}
           </nav>
 
-          {/* User section */}
           <div className="px-2 py-4 border-t border-[#00c4ff]/20">
             <Link
               to="/portal/notifications"
@@ -292,9 +280,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         </div>
       </aside>
 
-      {/* Main content */}
       <div className="lg:pl-64">
-        {/* Top bar */}
         <header className="sticky top-0 z-30 border-b border-[#00c4ff]/20 backdrop-blur-md" style={{ background: "rgba(10, 15, 20, 0.8)" }}>
           <div className="flex items-center justify-between px-4 py-3">
             <button
@@ -306,18 +292,17 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
             <div className="flex-1" />
 
-            {/* User dropdown */}
             <div className="flex items-center gap-3">
-              {user?.google_user_data?.picture && (
+              {user?.user_metadata?.avatar_url && (
                 <img
-                  src={user.google_user_data.picture}
+                  src={user.user_metadata.avatar_url}
                   alt=""
                   className="w-8 h-8 rounded-full ring-2 ring-[#00c4ff]/30"
                 />
               )}
               <div className="text-sm">
                 <div className="font-medium text-white">
-                  {user?.google_user_data?.name || user?.email}
+                  {user?.user_metadata?.full_name || user?.email}
                 </div>
                 {roleBadge && (
                   <div className="text-xs font-medium text-[#00c4ff]">{roleBadge.text}</div>
@@ -327,7 +312,6 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           </div>
         </header>
 
-        {/* Page content */}
         <main className="p-4 md:p-6">{children}</main>
       </div>
     </div>

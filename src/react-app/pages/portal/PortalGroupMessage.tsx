@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { ArrowLeft, Send, Users, Mail, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Team {
   id: number;
@@ -52,7 +53,7 @@ export default function PortalGroupMessage() {
 
   async function loadTeams() {
     try {
-      const res = await fetch("/api/portal/teams", { credentials: "include" });
+      const res = await apiFetch("/api/portal/teams", { });
       if (res.ok) {
         const data = await res.json();
         setTeams(data);
@@ -64,7 +65,7 @@ export default function PortalGroupMessage() {
 
   async function loadSentMessages() {
     try {
-      const res = await fetch("/api/portal/group-messages", { credentials: "include" });
+      const res = await apiFetch("/api/portal/group-messages", { });
       if (res.ok) {
         const data = await res.json();
         setSentMessages(data);
@@ -86,7 +87,7 @@ export default function PortalGroupMessage() {
         params.set("status", selectedStatus);
       }
       
-      const res = await fetch(`/api/portal/group-message-recipients?${params}`, { credentials: "include" });
+      const res = await apiFetch(`/api/portal/group-message-recipients?${params}`, { });
       if (res.ok) {
         const data = await res.json();
         setRecipients(data);
@@ -111,10 +112,9 @@ export default function PortalGroupMessage() {
     setSending(true);
     setSendResult(null);
     try {
-      const res = await fetch("/api/portal/group-messages", {
+      const res = await apiFetch("/api/portal/group-messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           subject,
           content,

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { useRoles } from "@/react-app/contexts/RoleContext";
 import { Download, Trash2, FileText, Plus } from "lucide-react";
 import { formatDateCustom } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Document {
   id: number;
@@ -47,8 +48,7 @@ function PortalDocuments() {
 
   const loadDocuments = async () => {
     try {
-      const response = await fetch("/api/portal/documents", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/documents", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -63,8 +63,7 @@ function PortalDocuments() {
 
   const loadTeams = async () => {
     try {
-      const response = await fetch("/api/portal/teams/all", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/teams/all", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -91,9 +90,8 @@ function PortalDocuments() {
       formData.append("description", uploadForm.description);
       formData.append("team_id", uploadForm.team_id);
 
-      const response = await fetch("/api/portal/documents", {
+      const response = await apiFetch("/api/portal/documents", {
         method: "POST",
-        credentials: "include",
         body: formData,
       });
 
@@ -118,8 +116,7 @@ function PortalDocuments() {
 
   const handleDownload = async (docId: number, fileName: string) => {
     try {
-      const response = await fetch(`/api/portal/documents/${docId}/download`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/documents/${docId}/download`, {
       });
 
       if (!response.ok) {
@@ -131,11 +128,6 @@ function PortalDocuments() {
 
       // Check content type header
       const contentType = response.headers.get("Content-Type") || "";
-      console.log("Download response:", {
-        status: response.status,
-        contentType: contentType,
-        contentLength: response.headers.get("Content-Length"),
-      });
 
       // If we got JSON error response instead of file
       if (contentType.includes("application/json")) {
@@ -146,7 +138,6 @@ function PortalDocuments() {
       }
 
       const blob = await response.blob();
-      console.log("Blob created:", { size: blob.size, type: blob.type });
 
       if (blob.size === 0) {
         alert("Download error - file is empty. It may not exist in storage.");
@@ -176,9 +167,8 @@ function PortalDocuments() {
     if (!confirm("Are you sure you want to delete this document?")) return;
 
     try {
-      const response = await fetch(`/api/portal/documents/${docId}`, {
+      const response = await apiFetch(`/api/portal/documents/${docId}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {

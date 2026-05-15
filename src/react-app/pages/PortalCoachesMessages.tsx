@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import {
@@ -10,6 +10,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { formatRelativeTime } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface CoachesMessage {
   id: number;
@@ -38,8 +39,7 @@ export function PortalCoachesMessages() {
 
   async function loadMessages() {
     try {
-      const response = await fetch("/api/portal/coaches/messages", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/coaches/messages", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -60,9 +60,8 @@ export function PortalCoachesMessages() {
 
     setCreating(true);
     try {
-      const response = await fetch("/api/portal/coaches/messages", {
+      const response = await apiFetch("/api/portal/coaches/messages", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title.trim(),

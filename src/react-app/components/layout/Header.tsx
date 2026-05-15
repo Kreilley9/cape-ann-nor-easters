@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { Menu, X, ChevronDown } from "lucide-react";
-import { useAuth } from "@getmocha/users-service/react";
+import { useAuth } from "@/react-app/contexts/AuthContext";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -30,7 +30,8 @@ export default function Header() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState<string | null>(null);
   const location = useLocation();
-  const { user, redirectToLogin } = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const isActive = (href: string) => {
     if (href === "/") return location.pathname === "/";
@@ -142,7 +143,7 @@ export default function Header() {
               </Link>
             ) : (
               <button
-                onClick={() => redirectToLogin()}
+                onClick={() => navigate("/sign-in")}
                 className="hidden sm:inline-flex px-4 py-2 border border-[#007ba7] text-[#00c4ff] text-sm font-semibold rounded-lg hover:bg-[#007ba7]/20 transition-colors"
               >
                 Log In
@@ -225,7 +226,7 @@ export default function Header() {
                   </Link>
                 ) : (
                   <button
-                    onClick={() => redirectToLogin()}
+                    onClick={() => navigate("/sign-in")}
                     className="w-full px-4 py-2 border border-[#007ba7] text-[#00c4ff] text-sm font-semibold rounded-lg"
                   >
                     Log In

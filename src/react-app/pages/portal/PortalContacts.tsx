@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo } from "react";
+﻿import { useState, useEffect, useMemo } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { 
   ArrowLeft, Mail, MessageSquare, Phone, Search, 
   ChevronUp, ChevronDown, CheckSquare, Square, Filter, X
 } from "lucide-react";
 import { useNavigate } from "react-router";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Contact {
   id: string;
@@ -67,7 +68,7 @@ export default function PortalContacts() {
   async function loadContacts() {
     setLoading(true);
     try {
-      const res = await fetch("/api/portal/contacts", { credentials: "include" });
+      const res = await apiFetch("/api/portal/contacts", { });
       if (res.ok) {
         const data = await res.json();
         setContacts(data);
@@ -81,7 +82,7 @@ export default function PortalContacts() {
 
   async function loadTeams() {
     try {
-      const res = await fetch("/api/portal/teams", { credentials: "include" });
+      const res = await apiFetch("/api/portal/teams", { });
       if (res.ok) {
         const data = await res.json();
         setTeams(data);
@@ -220,10 +221,9 @@ export default function PortalContacts() {
       
       setSending(true);
       try {
-        const res = await fetch("/api/portal/contacts/send-email", {
+        const res = await apiFetch("/api/portal/contacts/send-email", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify({
             emails: selectedEmails,
             subject,

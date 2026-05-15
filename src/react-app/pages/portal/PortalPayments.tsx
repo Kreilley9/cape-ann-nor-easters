@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { useRoles } from "@/react-app/contexts/RoleContext";
 import { formatDate } from "@/react-app/utils/dateFormat";
 import { DollarSign, Plus, X, Users, Trash2, CheckCircle2, Edit2, TrendingUp, Clock, Ban, FileText } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Payment {
   id: number;
@@ -70,6 +71,7 @@ export default function PortalPayments() {
   const [showWaiveModal, setShowWaiveModal] = useState(false);
   const [waivingPayment, setWaivingPayment] = useState<PlayerPayment | null>(null);
   const [waiverReason, setWaiverReason] = useState("");
+  const [savingPayment, setSavingPayment] = useState(false);
 
   const [newPayment, setNewPayment] = useState({
     team_id: 0,
@@ -104,16 +106,14 @@ export default function PortalPayments() {
   }
 
   async function loadFamilyPayments() {
-    const res = await fetch("/api/portal/payments", {
-      credentials: "include",
+    const res = await apiFetch("/api/portal/payments", {
     });
     const data = await res.json();
     setFamilyPayments(data);
   }
 
   async function loadPayments() {
-    const res = await fetch("/api/portal/payments", {
-      credentials: "include",
+    const res = await apiFetch("/api/portal/payments", {
     });
     const data = await res.json();
     setPayments(data);
@@ -121,8 +121,7 @@ export default function PortalPayments() {
 
   async function loadAllPlayerPayments() {
     try {
-      const res = await fetch("/api/portal/all-player-payments", {
-        credentials: "include",
+      const res = await apiFetch("/api/portal/all-player-payments", {
       });
       const data = await res.json();
       setAllPlayerPayments(data);
@@ -132,24 +131,21 @@ export default function PortalPayments() {
   }
 
   async function loadTeams() {
-    const res = await fetch("/api/portal/teams/all", {
-      credentials: "include",
+    const res = await apiFetch("/api/portal/teams/all", {
     });
     const data = await res.json();
     setTeams(data);
   }
 
   async function loadTeamRoster(teamId: number) {
-    const res = await fetch(`/api/portal/teams/${teamId}/roster`, {
-      credentials: "include",
+    const res = await apiFetch(`/api/portal/teams/${teamId}/roster`, {
     });
     const data = await res.json();
     setTeamPlayers(data);
   }
 
   async function loadPlayerPayments(paymentId: number) {
-    const res = await fetch(`/api/portal/payments/${paymentId}/players`, {
-      credentials: "include",
+    const res = await apiFetch(`/api/portal/payments/${paymentId}/players`, {
     });
     const data = await res.json();
     setPlayerPayments(data);
@@ -164,32 +160,35 @@ export default function PortalPayments() {
       return;
     }
 
-    const res = await fetch("/api/portal/payments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        ...newPayment,
-        amount: parseFloat(newPayment.amount),
-        team_id: parseInt(newPayment.team_id as unknown as string),
-      }),
-    });
+    setSavingPayment(true);
+    try {
+      const res = await apiFetch("/api/portal/payments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...newPayment,
+          amount: parseFloat(newPayment.amount),
+          team_id: parseInt(newPayment.team_id as unknown as string),
+        }),
+      });
 
-    if (res.ok) {
-      setShowCreateModal(false);
-      resetForm();
-      await loadPayments();
-      await loadAllPlayerPayments();
+      if (res.ok) {
+        setShowCreateModal(false);
+        resetForm();
+        await loadPayments();
+        await loadAllPlayerPayments();
+      }
+    } finally {
+      setSavingPayment(false);
     }
   }
 
   async function handleMarkPaid(playerPaymentId: number, currentStatus: string) {
     const newStatus = currentStatus === "paid" ? "pending" : "paid";
     
-    const res = await fetch(`/api/portal/player-payments/${playerPaymentId}`, {
+    const res = await apiFetch(`/api/portal/player-payments/${playerPaymentId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify({ status: newStatus }),
     });
 
@@ -208,10 +207,9 @@ export default function PortalPayments() {
   async function submitWaiver() {
     if (!waivingPayment) return;
 
-    const res = await fetch(`/api/portal/player-payments/${waivingPayment.id}/waive`, {
+    const res = await apiFetch(`/api/portal/player-payments/${waivingPayment.id}/waive`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify({ waiver_reason: waiverReason }),
     });
 
@@ -231,9 +229,8 @@ export default function PortalPayments() {
       return;
     }
 
-    const res = await fetch(`/api/portal/payments/${paymentId}`, {
+    const res = await apiFetch(`/api/portal/payments/${paymentId}`, {
       method: "DELETE",
-      credentials: "include",
     });
 
     if (res.ok) {
@@ -248,8 +245,7 @@ export default function PortalPayments() {
     setEditingPayment(payment);
     await loadTeamRoster(payment.team_id);
     
-    const res = await fetch(`/api/portal/payments/${payment.id}/players`, {
-      credentials: "include",
+    const res = await apiFetch(`/api/portal/payments/${payment.id}/players`, {
     });
     const players = await res.json();
     const playerIds = players.map((p: PlayerPayment) => p.player_id);
@@ -278,26 +274,30 @@ export default function PortalPayments() {
       return;
     }
 
-    const res = await fetch(`/api/portal/payments/${editingPayment.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        ...newPayment,
-        amount: parseFloat(newPayment.amount),
-        team_id: parseInt(newPayment.team_id as unknown as string),
-      }),
-    });
+    setSavingPayment(true);
+    try {
+      const res = await apiFetch(`/api/portal/payments/${editingPayment.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...newPayment,
+          amount: parseFloat(newPayment.amount),
+          team_id: parseInt(newPayment.team_id as unknown as string),
+        }),
+      });
 
-    if (res.ok) {
-      setShowEditModal(false);
-      setEditingPayment(null);
-      resetForm();
-      await loadPayments();
-      await loadAllPlayerPayments();
-      if (selectedPayment === editingPayment.id) {
-        await loadPlayerPayments(editingPayment.id);
+      if (res.ok) {
+        setShowEditModal(false);
+        setEditingPayment(null);
+        resetForm();
+        await loadPayments();
+        await loadAllPlayerPayments();
+        if (selectedPayment === editingPayment.id) {
+          await loadPlayerPayments(editingPayment.id);
+        }
       }
+    } finally {
+      setSavingPayment(false);
     }
   }
 
@@ -1046,9 +1046,10 @@ export default function PortalPayments() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-[#00c4ff] hover:bg-[#00a3d9] shadow-lg shadow-[#00c4ff]/20 text-white rounded-lg font-medium transition-colors"
+                  disabled={savingPayment}
+                  className="flex-1 px-4 py-2 bg-[#00c4ff] hover:bg-[#00a3d9] shadow-lg shadow-[#00c4ff]/20 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Create Dues
+                  {savingPayment ? "Saving..." : "Create Dues"}
                 </button>
               </div>
             </form>
@@ -1300,9 +1301,10 @@ export default function PortalPayments() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-[#00c4ff] hover:bg-[#00a3d9] shadow-lg shadow-[#00c4ff]/20 text-white rounded-lg font-medium transition-colors"
+                  disabled={savingPayment}
+                  className="flex-1 px-4 py-2 bg-[#00c4ff] hover:bg-[#00a3d9] shadow-lg shadow-[#00c4ff]/20 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Update Dues
+                  {savingPayment ? "Saving..." : "Update Dues"}
                 </button>
               </div>
             </form>

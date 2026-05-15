@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { useRoles } from "@/react-app/contexts/RoleContext";
 import { ShoppingBag, Check } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Player {
   id: number;
@@ -122,12 +123,10 @@ export default function PortalUniformOrder() {
         ? "/api/portal/players/all" 
         : "/api/portal/my-players";
       
-      const res = await fetch(endpoint, {
-        credentials: "include",
+      const res = await apiFetch(endpoint, {
       });
       if (res.ok) {
         const data = await res.json();
-        console.log("Loaded players:", data);
         setPlayers(data);
       } else {
         console.error("Failed to load players:", res.status, await res.text());
@@ -195,7 +194,6 @@ export default function PortalUniformOrder() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log("Form submission attempt:", { player_id: form.player_id, form });
     
     if (!form.player_id || form.player_id === null) {
       alert("Please select a player");
@@ -206,10 +204,9 @@ export default function PortalUniformOrder() {
     setSubmitting(true);
 
     try {
-      const res = await fetch("/api/portal/uniform-orders", {
+      const res = await apiFetch("/api/portal/uniform-orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           ...form,
           combo_total: totals.jersey + totals.shorts,
@@ -336,7 +333,6 @@ export default function PortalUniformOrder() {
               onChange={(e) => {
                 const playerId = e.target.value ? parseInt(e.target.value, 10) : null;
                 const player = players.find((p) => p.id === playerId);
-                console.log("Player selected:", { playerId, player, rawValue: e.target.value });
                 setForm({
                   ...form,
                   player_id: playerId,

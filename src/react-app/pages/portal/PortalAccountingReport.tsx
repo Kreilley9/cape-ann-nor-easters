@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { useRoles } from "@/react-app/contexts/RoleContext";
 import { formatDate, formatDateTime } from "@/react-app/utils/dateFormat";
 import { DollarSign, Filter, Download, ArrowLeft, TrendingUp, TrendingDown, Calculator, Mail, X, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface PaymentRecord {
   id: number;
@@ -64,9 +65,9 @@ export default function PortalAccountingReport() {
   async function loadData() {
     try {
       const [paymentsRes, teamsRes, familiesRes] = await Promise.all([
-        fetch("/api/portal/all-player-payments", { credentials: "include" }),
-        fetch("/api/portal/teams/all", { credentials: "include" }),
-        fetch("/api/portal/families", { credentials: "include" }),
+        apiFetch("/api/portal/all-player-payments", { }),
+        apiFetch("/api/portal/teams/all", { }),
+        apiFetch("/api/portal/families", { }),
       ]);
 
       const paymentsData = await paymentsRes.json();
@@ -161,10 +162,9 @@ export default function PortalAccountingReport() {
     setEmailResult(null);
     
     try {
-      const res = await fetch("/api/portal/accounting/send-report", {
+      const res = await apiFetch("/api/portal/accounting/send-report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           email: emailAddress.trim(),
           summary: {

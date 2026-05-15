@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { useAuth } from "@getmocha/users-service/react";
+﻿import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useAuth } from "@/react-app/contexts/AuthContext";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface UserRole {
   role: string;
@@ -15,11 +16,8 @@ interface RoleContextType {
   familyId: number | null;
   coachTeamIds: number[];
   loading: boolean;
-  // Helper function to check if user can access a team
   canAccessTeam: (teamId: number) => boolean;
-  // Helper function to check if user can access a player (via family)
   canAccessPlayer: (playerId: number, playerFamilyId: number | null) => boolean;
-  // Refresh roles from server
   refreshRoles: () => Promise<void>;
 }
 
@@ -48,12 +46,10 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       setLoading(false);
       return;
     }
-    
+
     try {
-      const response = await fetch("/api/users/me", {
-        credentials: "include",
-      });
-      
+      const response = await apiFetch("/api/users/me");
+
       if (response.ok) {
         const data = await response.json();
         setIsAdmin(data.is_admin || false);
@@ -73,22 +69,20 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 
   const isCoach = roles.some((r) => r.role === "coach") || isAdmin;
   const isParent = roles.some((r) => r.role === "parent") || !!familyId;
-  
-  // Get team IDs that the coach has access to
+
   const coachTeamIds = roles
     .filter((r) => r.role === "coach" && r.team_id !== null)
     .map((r) => r.team_id as number);
 
-  // Admin coaches have access to all teams
   const canAccessTeam = (teamId: number): boolean => {
     if (isAdmin) return true;
-    if (coachTeamIds.length === 0 && isCoach) return true; // Coach without specific teams = all teams
+    if (coachTeamIds.length === 0 && isCoach) return true;
     return coachTeamIds.includes(teamId);
   };
 
   const canAccessPlayer = (_playerId: number, playerFamilyId: number | null): boolean => {
     if (isAdmin) return true;
-    if (isCoach) return true; // Coaches can access all players on their teams
+    if (isCoach) return true;
     if (isParent && familyId && playerFamilyId === familyId) return true;
     return false;
   };

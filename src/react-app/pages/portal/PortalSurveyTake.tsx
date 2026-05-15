@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 import { formatDate } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Question {
   id: number;
@@ -38,8 +39,7 @@ export default function PortalSurveyTake() {
 
   async function loadSurvey() {
     try {
-      const response = await fetch(`/api/portal/surveys/${id}`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/surveys/${id}`, {
       });
       
       if (response.ok) {
@@ -78,9 +78,8 @@ export default function PortalSurveyTake() {
     setSubmitting(true);
 
     try {
-      const response = await fetch(`/api/portal/surveys/${id}/response`, {
+      const response = await apiFetch(`/api/portal/surveys/${id}/response`, {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers }),
       });

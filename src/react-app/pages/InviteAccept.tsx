@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { useAuth } from "@getmocha/users-service/react";
+import { useAuth } from "@/react-app/contexts/AuthContext";
 import { Mail, CheckCircle, XCircle, Loader } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 export default function InviteAccept() {
   const { code } = useParams<{ code: string }>();
@@ -29,7 +30,7 @@ export default function InviteAccept() {
     }
 
     try {
-      const response = await fetch(`/api/invites/validate/${code}`);
+      const response = await apiFetch(`/api/invites/validate/${code}`);
       const data = await response.json();
 
       if (data.valid) {
@@ -51,10 +52,9 @@ export default function InviteAccept() {
     setStatus("accepting");
 
     try {
-      const response = await fetch("/api/portal/invites/accept", {
+      const response = await apiFetch("/api/portal/invites/accept", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ code }),
       });
 

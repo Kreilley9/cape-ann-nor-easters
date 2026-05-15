@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { Plus, Send, BarChart2, Eye, Trash2, Clock, Edit } from "lucide-react";
 import { formatDate } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Survey {
   id: number;
@@ -28,8 +29,7 @@ export default function PortalSurveys() {
 
   async function loadSurveys() {
     try {
-      const response = await fetch("/api/portal/surveys", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/surveys", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -46,9 +46,8 @@ export default function PortalSurveys() {
     if (!confirm("Are you sure you want to delete this survey?")) return;
 
     try {
-      const response = await fetch(`/api/portal/surveys/${id}`, {
+      const response = await apiFetch(`/api/portal/surveys/${id}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {

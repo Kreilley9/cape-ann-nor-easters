@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { useRoles } from "@/react-app/contexts/RoleContext";
 import { ArrowLeft, Bell, Mail, Smartphone, Save, Loader2 } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface NotificationPreferences {
   notification_email: string;
@@ -113,8 +114,7 @@ export default function PortalNotificationSettings() {
 
   const loadPreferences = async () => {
     try {
-      const res = await fetch("/api/portal/notification-preferences", {
-        credentials: "include",
+      const res = await apiFetch("/api/portal/notification-preferences", {
       });
       if (res.ok) {
         const data = await res.json();
@@ -151,10 +151,9 @@ export default function PortalNotificationSettings() {
     setMessage(null);
     
     try {
-      const res = await fetch("/api/portal/notification-preferences", {
+      const res = await apiFetch("/api/portal/notification-preferences", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(preferences),
       });
       

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { Plus, Trash2, Eye, EyeOff, Save, X, Upload, ArrowUp, ArrowDown, Edit2 } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Coach {
   id: number;
@@ -47,8 +48,7 @@ export default function PortalCoachesManagement() {
 
   const loadCoaches = async () => {
     try {
-      const response = await fetch("/api/public/coaches", {
-        credentials: "include",
+      const response = await apiFetch("/api/public/coaches", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -63,8 +63,7 @@ export default function PortalCoachesManagement() {
 
   const loadTeams = async () => {
     try {
-      const response = await fetch("/api/portal/teams", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/teams", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -114,9 +113,8 @@ export default function PortalCoachesManagement() {
       const uploadData = new FormData();
       uploadData.append("photo", file);
 
-      const response = await fetch("/api/public/coaches/upload-photo", {
+      const response = await apiFetch("/api/public/coaches/upload-photo", {
         method: "POST",
-        credentials: "include",
         body: uploadData,
       });
 
@@ -146,10 +144,9 @@ export default function PortalCoachesManagement() {
         : "/api/public/coaches";
       const method = editingCoach ? "PUT" : "POST";
 
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           name: formData.name,
           role: formData.role || null,
@@ -179,9 +176,8 @@ export default function PortalCoachesManagement() {
     if (!confirm("Are you sure you want to delete this coach?")) return;
 
     try {
-      const response = await fetch(`/api/public/coaches/${id}`, {
+      const response = await apiFetch(`/api/public/coaches/${id}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {
@@ -194,10 +190,9 @@ export default function PortalCoachesManagement() {
 
   const handleToggleVisibility = async (coach: Coach) => {
     try {
-      const response = await fetch(`/api/public/coaches/${coach.id}`, {
+      const response = await apiFetch(`/api/public/coaches/${coach.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           name: coach.name,
           role: coach.role,
@@ -229,10 +224,9 @@ export default function PortalCoachesManagement() {
 
     try {
       await Promise.all([
-        fetch(`/api/public/coaches/${coach.id}`, {
+        apiFetch(`/api/public/coaches/${coach.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify({
             name: coach.name,
             role: coach.role,
@@ -245,10 +239,9 @@ export default function PortalCoachesManagement() {
             is_visible: coach.is_visible === 1,
           }),
         }),
-        fetch(`/api/public/coaches/${targetCoach.id}`, {
+        apiFetch(`/api/public/coaches/${targetCoach.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify({
             name: targetCoach.name,
             role: targetCoach.role,

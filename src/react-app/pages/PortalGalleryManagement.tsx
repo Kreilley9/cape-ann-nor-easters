@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { Plus, Trash2, Eye, EyeOff, Save, X, Upload, ArrowUp, ArrowDown } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface GalleryPhoto {
   id: number;
@@ -29,8 +30,7 @@ export default function PortalGalleryManagement() {
 
   const loadPhotos = async () => {
     try {
-      const response = await fetch("/api/gallery", {
-        credentials: "include",
+      const response = await apiFetch("/api/gallery", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -68,9 +68,8 @@ export default function PortalGalleryManagement() {
       const uploadData = new FormData();
       uploadData.append("image", file);
 
-      const response = await fetch("/api/gallery/upload-image", {
+      const response = await apiFetch("/api/gallery/upload-image", {
         method: "POST",
-        credentials: "include",
         body: uploadData,
       });
 
@@ -100,10 +99,9 @@ export default function PortalGalleryManagement() {
         : "/api/gallery";
       const method = editingPhoto ? "PUT" : "POST";
 
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           image_key: formData.image_key,
           caption: formData.caption || null,
@@ -128,9 +126,8 @@ export default function PortalGalleryManagement() {
     if (!confirm("Are you sure you want to delete this photo?")) return;
 
     try {
-      const response = await fetch(`/api/gallery/${id}`, {
+      const response = await apiFetch(`/api/gallery/${id}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {
@@ -143,10 +140,9 @@ export default function PortalGalleryManagement() {
 
   const handleToggleVisibility = async (photo: GalleryPhoto) => {
     try {
-      const response = await fetch(`/api/gallery/${photo.id}`, {
+      const response = await apiFetch(`/api/gallery/${photo.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           image_key: photo.image_key,
           caption: photo.caption,
@@ -174,10 +170,9 @@ export default function PortalGalleryManagement() {
     try {
       // Swap order indices
       await Promise.all([
-        fetch(`/api/gallery/${photo.id}`, {
+        apiFetch(`/api/gallery/${photo.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify({
             image_key: photo.image_key,
             caption: photo.caption,
@@ -185,10 +180,9 @@ export default function PortalGalleryManagement() {
             is_visible: photo.is_visible === 1,
           }),
         }),
-        fetch(`/api/gallery/${targetPhoto.id}`, {
+        apiFetch(`/api/gallery/${targetPhoto.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
           body: JSON.stringify({
             image_key: targetPhoto.image_key,
             caption: targetPhoto.caption,

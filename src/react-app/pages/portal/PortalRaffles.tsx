@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import {
   Loader2, Plus, Edit, Trophy, QrCode, DollarSign, 
   Ticket, Users, CheckCircle, X, RefreshCw
 } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Raffle {
   id: number;
@@ -79,7 +80,7 @@ export default function PortalRaffles() {
 
   const loadRaffles = async () => {
     try {
-      const res = await fetch("/api/portal/raffles", { credentials: "include" });
+      const res = await apiFetch("/api/portal/raffles", { });
       if (res.ok) {
         const data = await res.json();
         setRaffles(data);
@@ -94,7 +95,7 @@ export default function PortalRaffles() {
   const loadTickets = async (raffleId: number) => {
     setLoadingTickets(true);
     try {
-      const res = await fetch(`/api/portal/raffles/${raffleId}/tickets`, { credentials: "include" });
+      const res = await apiFetch(`/api/portal/raffles/${raffleId}/tickets`, { });
       if (res.ok) {
         const data = await res.json();
         setTickets(data);
@@ -108,7 +109,7 @@ export default function PortalRaffles() {
 
   const loadSellers = async (raffleId: number) => {
     try {
-      const res = await fetch(`/api/portal/raffles/${raffleId}/sellers`, { credentials: "include" });
+      const res = await apiFetch(`/api/portal/raffles/${raffleId}/sellers`, { });
       if (res.ok) {
         const data = await res.json();
         setSellers(data);
@@ -183,10 +184,9 @@ export default function PortalRaffles() {
         : "/api/portal/raffles";
       const method = editingRaffle ? "PUT" : "POST";
 
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(payload),
       });
 
@@ -194,7 +194,7 @@ export default function PortalRaffles() {
         setShowModal(false);
         loadRaffles();
         if (selectedRaffle && editingRaffle?.id === selectedRaffle.id) {
-          const updated = await fetch(`/api/portal/raffles/${selectedRaffle.id}`, { credentials: "include" });
+          const updated = await apiFetch(`/api/portal/raffles/${selectedRaffle.id}`, { });
           if (updated.ok) setSelectedRaffle(await updated.json());
         }
       } else {
@@ -209,9 +209,8 @@ export default function PortalRaffles() {
   };
 
   const markTicketPaid = async (ticketId: number) => {
-    const res = await fetch(`/api/portal/raffle-tickets/${ticketId}/paid`, {
+    const res = await apiFetch(`/api/portal/raffle-tickets/${ticketId}/paid`, {
       method: "PATCH",
-      credentials: "include",
     });
     if (res.ok && selectedRaffle) {
       loadTickets(selectedRaffle.id);
@@ -226,9 +225,8 @@ export default function PortalRaffles() {
     // Dramatic delay for effect
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    const res = await fetch(`/api/portal/raffles/${selectedRaffle.id}/select-winner`, {
+    const res = await apiFetch(`/api/portal/raffles/${selectedRaffle.id}/select-winner`, {
       method: "POST",
-      credentials: "include",
     });
     
     if (res.ok) {
@@ -236,7 +234,7 @@ export default function PortalRaffles() {
       alert(`🎉 Winner: ${data.winner.buyer_name}\nTicket #${data.winner.ticket_number}`);
       loadRaffles();
       // Refresh selected raffle
-      const updated = await fetch(`/api/portal/raffles/${selectedRaffle.id}`, { credentials: "include" });
+      const updated = await apiFetch(`/api/portal/raffles/${selectedRaffle.id}`, { });
       if (updated.ok) setSelectedRaffle(await updated.json());
     } else {
       const error = await res.json();

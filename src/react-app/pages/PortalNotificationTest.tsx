@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface NotificationLog {
   id: number;
@@ -23,8 +24,7 @@ export function PortalNotificationTest() {
   const loadLogs = async () => {
     setLogsLoading(true);
     try {
-      const response = await fetch("/api/portal/admin/tables/notification_logs/rows", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/admin/tables/notification_logs/rows", {
       });
       
       if (response.ok) {
@@ -48,10 +48,9 @@ export function PortalNotificationTest() {
     setResult(null);
 
     try {
-      const response = await fetch("/api/test-sms", {
+      const response = await apiFetch("/api/test-sms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ phone, message }),
       });
 

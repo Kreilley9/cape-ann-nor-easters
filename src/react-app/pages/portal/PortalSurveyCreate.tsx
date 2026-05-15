@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { Plus, Trash2, GripVertical } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Team {
   id: number;
@@ -53,9 +54,9 @@ export default function PortalSurveyCreate() {
   async function loadData() {
     try {
       const [teamsRes, familiesRes, playersRes] = await Promise.all([
-        fetch("/api/portal/teams", { credentials: "include" }),
-        fetch("/api/portal/families", { credentials: "include" }),
-        fetch("/api/portal/players/all", { credentials: "include" })
+        apiFetch("/api/portal/teams", { }),
+        apiFetch("/api/portal/families", { }),
+        apiFetch("/api/portal/players/all", { })
       ]);
 
       if (teamsRes.ok) setTeams(await teamsRes.json());
@@ -106,9 +107,8 @@ export default function PortalSurveyCreate() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/portal/surveys", {
+      const response = await apiFetch("/api/portal/surveys", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,

@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router";
-import { AuthProvider } from "@getmocha/users-service/react";
+import { AuthProvider } from "@/react-app/contexts/AuthContext";
 import { RoleProvider } from "@/react-app/contexts/RoleContext";
 import { useState, useEffect } from "react";
 import BlizzardIntro from "@/react-app/components/BlizzardIntro";
@@ -62,6 +62,7 @@ import RaffleSeller from "@/react-app/pages/RaffleSeller";
 import { PortalCoachesDocuments } from "@/react-app/pages/PortalCoachesDocuments";
 import { PortalCoachesMessages } from "@/react-app/pages/PortalCoachesMessages";
 import { PortalCoachesMessageDetail } from "@/react-app/pages/PortalCoachesMessageDetail";
+import SignIn from "@/react-app/pages/SignIn";
 import ScrollToTop from "@/react-app/components/ScrollToTop";
 
 function AppContent() {
@@ -107,6 +108,7 @@ function AppContent() {
           <Route path="/support" element={<Support />} />
           <Route path="/support/sponsorship" element={<Sponsorship />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/sign-in" element={<SignIn />} />
           <Route path="/invite/:code" element={<InviteAccept />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/admin" element={<Admin />} />

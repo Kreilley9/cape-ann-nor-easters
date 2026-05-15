@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { useRoles } from "@/react-app/contexts/RoleContext";
 import { formatDate } from "@/react-app/utils/dateFormat";
 import { DollarSign, Filter, Download, ArrowLeft, Search, X, Mail, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface OutstandingDue {
   id: number;
@@ -74,10 +75,10 @@ export default function PortalOutstandingDues() {
   async function loadData() {
     try {
       const [duesRes, teamsRes, familiesRes, playersRes] = await Promise.all([
-        fetch("/api/portal/all-player-payments", { credentials: "include" }),
-        fetch("/api/portal/teams/all", { credentials: "include" }),
-        fetch("/api/portal/families", { credentials: "include" }),
-        fetch("/api/portal/players/all", { credentials: "include" }),
+        apiFetch("/api/portal/all-player-payments", { }),
+        apiFetch("/api/portal/teams/all", { }),
+        apiFetch("/api/portal/families", { }),
+        apiFetch("/api/portal/players/all", { }),
       ]);
 
       const allPayments = await duesRes.json();
@@ -179,8 +180,7 @@ export default function PortalOutstandingDues() {
       if (filterTeam) params.append("team_id", filterTeam.toString());
       if (filterFamily) params.append("family_id", filterFamily.toString());
       
-      const res = await fetch(`/api/portal/outstanding-dues/email-preview?${params}`, {
-        credentials: "include",
+      const res = await apiFetch(`/api/portal/outstanding-dues/email-preview?${params}`, {
       });
       const data = await res.json();
       setEmailPreview(data);
@@ -197,10 +197,9 @@ export default function PortalOutstandingDues() {
     setEmailResult(null);
     
     try {
-      const res = await fetch("/api/portal/outstanding-dues/send-reminders", {
+      const res = await apiFetch("/api/portal/outstanding-dues/send-reminders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           family_ids: selectedFamilies,
           team_id: filterTeam || undefined,

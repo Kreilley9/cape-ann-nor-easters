@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@getmocha/users-service/react";
+﻿import { useState, useEffect } from "react";
+import { useAuth } from "@/react-app/contexts/AuthContext";
 import { useNavigate, Link } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { useRoles } from "@/react-app/contexts/RoleContext";
@@ -9,6 +9,7 @@ import {
   UserPlus, ShoppingBag, FileText, MessageSquare, ClipboardList,
   AlertCircle, Clock, MapPin, User, CheckCircle, CreditCard
 } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface DashboardStats {
   totalTeams: number;
@@ -80,8 +81,7 @@ export default function PortalDashboard() {
 
   const loadFamilyDashboard = async () => {
     try {
-      const response = await fetch("/api/portal/family-dashboard", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/family-dashboard", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -96,8 +96,7 @@ export default function PortalDashboard() {
 
   const loadStats = async () => {
     try {
-      const response = await fetch("/api/portal/stats", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/stats", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -112,8 +111,7 @@ export default function PortalDashboard() {
 
   const loadActivity = async () => {
     try {
-      const response = await fetch("/api/portal/activity", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/activity", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -142,7 +140,7 @@ export default function PortalDashboard() {
           {/* Welcome header */}
           <div>
             <h1 className="text-2xl font-bold text-white font-[Oswald] tracking-wide">
-              Welcome, {familyData.family?.parent1_first_name || user.google_user_data?.given_name || "Family"}!
+              Welcome, {familyData.family?.parent1_first_name || user.user_metadata?.given_name || "Family"}!
             </h1>
             <p className="text-gray-400 mt-1">
               Here's what needs your attention.
@@ -563,7 +561,7 @@ export default function PortalDashboard() {
         {/* Welcome header */}
         <div>
           <h1 className="text-2xl font-bold text-white font-[Oswald] tracking-wide">
-            Welcome back, {user.google_user_data?.given_name || "Coach"}!
+            Welcome back, {user.user_metadata?.given_name || "Coach"}!
           </h1>
           <p className="text-gray-400 mt-1">
             Here's what's happening with your teams.

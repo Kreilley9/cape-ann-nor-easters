@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router";
-import { useAuth } from "@getmocha/users-service/react";
+import { useAuth } from "@/react-app/contexts/AuthContext";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface OnboardingCheckProps {
   children: React.ReactNode;
@@ -14,38 +15,34 @@ export function OnboardingCheck({ children }: OnboardingCheckProps) {
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
-      // Skip check if user is not logged in, still loading, or already on onboarding/invite pages
-      if (!user || isPending || 
-          location.pathname === "/onboarding" || 
-          location.pathname.startsWith("/invite/") ||
-          location.pathname === "/auth/callback") {
+      if (
+        !user ||
+        isPending ||
+        location.pathname === "/onboarding" ||
+        location.pathname.startsWith("/invite/") ||
+        location.pathname === "/auth/callback"
+      ) {
         setChecking(false);
         return;
       }
 
       try {
-        const response = await fetch("/api/users/me", { credentials: "include" });
-        if (!response.ok) {
-          setChecking(false);
+        const response = await apiFetch("/api/users/me");
+        if (!response.ok) { setChecking(false); return; }
+
+        const userData = await response.json();
+
+        if (!userData.family_id) {
+          navigate("/onboarding");
           return;
         }
 
-        const userData = await response.json();
-        
-        // If user is a parent and has a family_id, check if onboarding is completed
-        if (userData.roles?.some((r: any) => r.role === "parent") && userData.family_id) {
-          const familyResponse = await fetch(`/api/portal/families/${userData.family_id}`, {
-            credentials: "include"
-          });
-          
-          if (familyResponse.ok) {
-            const family = await familyResponse.json();
-            
-            // If onboarding not completed, redirect to onboarding
-            if (!family.onboarding_completed && location.pathname !== "/onboarding") {
-              navigate("/onboarding");
-              return;
-            }
+        const familyResponse = await apiFetch(`/api/portal/families/${userData.family_id}`);
+        if (familyResponse.ok) {
+          const family = await familyResponse.json();
+          if (!family.onboarding_completed) {
+            navigate("/onboarding");
+            return;
           }
         }
       } catch (error) {

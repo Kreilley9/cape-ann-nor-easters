@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@getmocha/users-service/react";
+﻿import { useState, useEffect } from "react";
+import { useAuth } from "@/react-app/contexts/AuthContext";
 import { useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { formatDate } from "@/react-app/utils/dateFormat";
@@ -15,6 +15,7 @@ import {
   SlidersHorizontal,
   ArrowUpDown,
 } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Prospect {
   id: number;
@@ -82,8 +83,7 @@ export default function PortalRecruiting() {
 
   const loadProspects = async () => {
     try {
-      const response = await fetch("/api/portal/prospects", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/prospects", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -103,10 +103,9 @@ export default function PortalRecruiting() {
         rating: newProspect.rating ? parseInt(newProspect.rating) : null,
       };
       
-      const response = await fetch("/api/portal/prospects", {
+      const response = await apiFetch("/api/portal/prospects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(prospectData),
       });
 

@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { useRoles } from "@/react-app/contexts/RoleContext";
 import { formatDate } from "@/react-app/utils/dateFormat";
 import { ShoppingBag, Download, CheckCircle, Package, Lock } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface UniformOrder {
   id: number;
@@ -62,8 +63,7 @@ export default function PortalUniformOrders() {
       const params = new URLSearchParams();
       if (statusFilter) params.append("status", statusFilter);
       
-      const res = await fetch(`/api/portal/uniform-orders?${params}`, {
-        credentials: "include",
+      const res = await apiFetch(`/api/portal/uniform-orders?${params}`, {
       });
       if (res.ok) {
         const data = await res.json();
@@ -294,10 +294,9 @@ export default function PortalUniformOrders() {
     try {
       await Promise.all(
         ordersToMark.map(id =>
-          fetch(`/api/portal/uniform-orders/${id}`, {
+          apiFetch(`/api/portal/uniform-orders/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            credentials: "include",
             body: JSON.stringify({ status: "ordered" }),
           })
         )

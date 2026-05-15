@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import {
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useRoles } from "@/react-app/contexts/RoleContext";
 import { formatDateTime } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Message {
   id: number;
@@ -45,8 +46,7 @@ export function PortalCoachesMessageDetail() {
 
   async function loadMessage() {
     try {
-      const response = await fetch(`/api/portal/coaches/messages/${id}`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/coaches/messages/${id}`, {
       });
       if (response.ok) {
         const data = await response.json();
@@ -65,9 +65,8 @@ export function PortalCoachesMessageDetail() {
 
     setSubmitting(true);
     try {
-      const response = await fetch(`/api/portal/coaches/messages/${id}/replies`, {
+      const response = await apiFetch(`/api/portal/coaches/messages/${id}/replies`, {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: replyContent.trim() }),
       });
@@ -85,9 +84,8 @@ export function PortalCoachesMessageDetail() {
 
   async function handleTogglePin() {
     try {
-      const response = await fetch(`/api/portal/coaches/messages/${id}/pin`, {
+      const response = await apiFetch(`/api/portal/coaches/messages/${id}/pin`, {
         method: "PUT",
-        credentials: "include",
       });
 
       if (response.ok) {
@@ -102,9 +100,8 @@ export function PortalCoachesMessageDetail() {
     if (!confirm("Delete this thread and all replies?")) return;
 
     try {
-      const response = await fetch(`/api/portal/coaches/messages/${id}`, {
+      const response = await apiFetch(`/api/portal/coaches/messages/${id}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {

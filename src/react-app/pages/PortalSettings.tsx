@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { 
   Save, Eye, AlertCircle, Info, AlertTriangle, CheckCircle, 
   Users, Shield, Search, UserCog, FileText, MessageSquare, 
   Calendar, UserPlus, X
 } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface BannerConfig {
   enabled: boolean;
@@ -97,8 +98,7 @@ export default function PortalSettings() {
 
   const loadSettings = async () => {
     try {
-      const response = await fetch("/api/portal/site-config", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/site-config", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -118,8 +118,7 @@ export default function PortalSettings() {
 
   const loadUsers = async () => {
     try {
-      const response = await fetch("/api/portal/user-roles", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/user-roles", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -140,8 +139,7 @@ export default function PortalSettings() {
   const loadUserPermissions = async (userId: string) => {
     setPermissionsLoading(true);
     try {
-      const response = await fetch(`/api/portal/user-permissions/${encodeURIComponent(userId)}`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/user-permissions/${encodeURIComponent(userId)}`, {
       });
       if (response.ok) {
         const data = await response.json();
@@ -174,10 +172,9 @@ export default function PortalSettings() {
     setPermissionsSaving(true);
     setMessage(null);
     try {
-      const response = await fetch(`/api/portal/user-permissions/${encodeURIComponent(selectedUserId)}`, {
+      const response = await apiFetch(`/api/portal/user-permissions/${encodeURIComponent(selectedUserId)}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           recruiting_access: permissions.recruiting_access,
           recruiting_age_groups: JSON.stringify(permissions.recruiting_age_groups),
@@ -204,10 +201,9 @@ export default function PortalSettings() {
     setSaving(true);
     setMessage(null);
     try {
-      const response = await fetch("/api/portal/site-config/banner", {
+      const response = await apiFetch("/api/portal/site-config/banner", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           enabled: banner.enabled,
           text: banner.text,

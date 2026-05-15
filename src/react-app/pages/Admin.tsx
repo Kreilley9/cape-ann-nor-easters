@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@getmocha/users-service/react";
+﻿import { useState, useEffect } from "react";
+import { useAuth } from "@/react-app/contexts/AuthContext";
 import { useNavigate } from "react-router";
 import { Loader2, ArrowLeft } from "lucide-react";
 import type { Board, Reservation } from "@/shared/types";
+import { apiFetch } from "@/react-app/lib/api";
 
 export default function Admin() {
   const { user, isPending } = useAuth();
@@ -49,7 +50,7 @@ export default function Admin() {
 
   const checkAdminStatus = async () => {
     try {
-      const response = await fetch("/api/users/me");
+      const response = await apiFetch("/api/users/me");
       if (response.ok) {
         const data = await response.json();
         if (!data.is_admin) {
@@ -112,7 +113,7 @@ export default function Admin() {
 
   const loadBoards = async () => {
     try {
-      const response = await fetch("/api/boards");
+      const response = await apiFetch("/api/boards");
       const data = await response.json();
       setBoards(data);
       setLoading(false);
@@ -124,7 +125,7 @@ export default function Admin() {
 
   const loadAdmins = async () => {
     try {
-      const response = await fetch("/api/admins");
+      const response = await apiFetch("/api/admins");
       if (response.ok) {
         const data = await response.json();
         setAdmins(data.map((a: any) => a.email));
@@ -136,7 +137,7 @@ export default function Admin() {
 
   const loadReservations = async (boardId: number) => {
     try {
-      const response = await fetch(`/api/reservations?board_id=${boardId}`);
+      const response = await apiFetch(`/api/reservations?board_id=${boardId}`);
       const data = await response.json();
       setReservations(data);
     } catch (error) {
@@ -158,7 +159,7 @@ export default function Admin() {
     }
 
     try {
-      await fetch(`/api/boards/${selectedBoard.id}`, { method: "DELETE" });
+      await apiFetch(`/api/boards/${selectedBoard.id}`, { method: "DELETE" });
       await loadBoards();
       setSelectedBoard(null);
       setSelectedBoardId("");
@@ -172,7 +173,7 @@ export default function Admin() {
     if (!selectedBoard) return;
 
     try {
-      await fetch(`/api/boards/${selectedBoard.id}`, {
+      await apiFetch(`/api/boards/${selectedBoard.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ is_open: isOpen }),
@@ -192,7 +193,7 @@ export default function Admin() {
     }
 
     try {
-      const response = await fetch(`/api/boards/${selectedBoard.id}/randomize`, {
+      const response = await apiFetch(`/api/boards/${selectedBoard.id}/randomize`, {
         method: "POST",
       });
 
@@ -248,7 +249,7 @@ export default function Admin() {
     try {
       if (selectedBoard) {
         // Update existing board
-        await fetch(`/api/boards/${selectedBoard.id}`, {
+        await apiFetch(`/api/boards/${selectedBoard.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
@@ -256,7 +257,7 @@ export default function Admin() {
         alert("Board updated successfully!");
       } else {
         // Create new board
-        await fetch("/api/boards", {
+        await apiFetch("/api/boards", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...formData, is_open: true }),
@@ -275,7 +276,7 @@ export default function Admin() {
     if (!selectedBoard) return;
 
     try {
-      await fetch(`/api/boards/${selectedBoard.id}`, {
+      await apiFetch(`/api/boards/${selectedBoard.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -305,7 +306,7 @@ export default function Admin() {
     });
 
     try {
-      await fetch(`/api/boards/${selectedBoard.id}/scores`, {
+      await apiFetch(`/api/boards/${selectedBoard.id}/scores`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(scoresData),
@@ -320,7 +321,7 @@ export default function Admin() {
 
   const handleMarkPaid = async (reservationId: number) => {
     try {
-      await fetch(`/api/reservations/${reservationId}/paid`, {
+      await apiFetch(`/api/reservations/${reservationId}/paid`, {
         method: "PATCH",
       });
       await loadReservations(selectedBoard!.id);
@@ -342,7 +343,7 @@ export default function Admin() {
     if (!editingReservation) return;
 
     try {
-      await fetch(`/api/reservations/${editingReservation.id}`, {
+      await apiFetch(`/api/reservations/${editingReservation.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editForm),
@@ -361,7 +362,7 @@ export default function Admin() {
     }
 
     try {
-      await fetch(`/api/reservations/${reservationId}`, {
+      await apiFetch(`/api/reservations/${reservationId}`, {
         method: "DELETE",
       });
       await loadReservations(selectedBoard!.id);
@@ -376,7 +377,7 @@ export default function Admin() {
     if (!newAdminEmail) return;
 
     try {
-      const response = await fetch("/api/admins", {
+      const response = await apiFetch("/api/admins", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: newAdminEmail }),

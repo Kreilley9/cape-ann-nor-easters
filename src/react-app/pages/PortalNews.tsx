@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { Plus, Edit2, Trash2, Eye, EyeOff, Save, X, Upload } from "lucide-react";
 import { formatDateTime } from "@/react-app/utils/dateFormat";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface NewsPost {
   id: number;
@@ -41,8 +42,7 @@ export default function PortalNews() {
 
   const loadPosts = async () => {
     try {
-      const response = await fetch("/api/portal/news-posts", {
-        credentials: "include",
+      const response = await apiFetch("/api/portal/news-posts", {
       });
       if (response.ok) {
         const data = await response.json();
@@ -82,9 +82,8 @@ export default function PortalNews() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("/api/portal/news-posts/upload-image", {
+      const response = await apiFetch("/api/portal/news-posts/upload-image", {
         method: "POST",
-        credentials: "include",
         body: formData,
       });
 
@@ -147,16 +146,11 @@ export default function PortalNews() {
         : "/api/portal/news-posts";
       const method = editingPost ? "PUT" : "POST";
 
-      console.log("Submitting news post:", { url, method, data: formData });
-
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(formData),
       });
-
-      console.log("Response status:", response.status);
 
       if (response.ok) {
         setShowModal(false);
@@ -177,9 +171,8 @@ export default function PortalNews() {
     if (!confirm("Are you sure you want to delete this post?")) return;
 
     try {
-      const response = await fetch(`/api/portal/news-posts/${id}`, {
+      const response = await apiFetch(`/api/portal/news-posts/${id}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {

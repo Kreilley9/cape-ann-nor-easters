@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { Ticket, DollarSign, CheckCircle, Clock, ExternalLink } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface MyRaffle {
   id: number;
@@ -23,7 +24,7 @@ export default function PortalMySales() {
 
   const loadRaffles = async () => {
     try {
-      const res = await fetch("/api/portal/my-raffles", { credentials: "include" });
+      const res = await apiFetch("/api/portal/my-raffles", { });
       if (res.ok) {
         const data = await res.json();
         setRaffles(data);

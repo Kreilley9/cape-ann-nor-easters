@@ -19,7 +19,7 @@ export default function BlizzardIntro({ onComplete }: { onComplete: () => void }
     // Play wind sound
     const audio = new Audio("https://019b7617-c3ef-76fd-99cc-e86fca2684d0.mochausercontent.com/dragon-studio-blizzard-wind-463217.mp3");
     audio.volume = 0.6;
-    audio.play().catch(err => console.log("Audio play failed:", err));
+    audio.play().catch(() => {});
 
     // Generate INTENSE blizzard snowflakes - MASSIVE particle count
     const flakes: BlizzardSnowflake[] = [];

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@getmocha/users-service/react";
+﻿import { useState, useEffect } from "react";
+import { useAuth } from "@/react-app/contexts/AuthContext";
 import { useNavigate, useParams } from "react-router";
 import { PortalLayout } from "@/react-app/components/layout/PortalLayout";
 import { formatDateTime } from "@/react-app/utils/dateFormat";
@@ -16,6 +16,7 @@ import {
   Mail,
   MessageSquare,
 } from "lucide-react";
+import { apiFetch } from "@/react-app/lib/api";
 
 interface Prospect {
   id: number;
@@ -78,8 +79,7 @@ export default function PortalProspectDetail() {
 
   const loadProspect = async () => {
     try {
-      const response = await fetch(`/api/portal/prospects/${id}`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/prospects/${id}`, {
       });
       if (response.ok) {
         const data = await response.json();
@@ -95,8 +95,7 @@ export default function PortalProspectDetail() {
 
   const loadNotes = async () => {
     try {
-      const response = await fetch(`/api/portal/prospects/${id}/notes`, {
-        credentials: "include",
+      const response = await apiFetch(`/api/portal/prospects/${id}/notes`, {
       });
       if (response.ok) {
         const data = await response.json();
@@ -109,24 +108,13 @@ export default function PortalProspectDetail() {
 
   const handleUpdate = async () => {
     try {
-      console.log("=== STARTING UPDATE ===");
-      console.log("Prospect ID:", id);
-      console.log("Edit form data:", JSON.stringify(editForm, null, 2));
-      console.log("Edit form keys:", Object.keys(editForm));
-      
-      const response = await fetch(`/api/portal/prospects/${id}`, {
+      const response = await apiFetch(`/api/portal/prospects/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(editForm),
       });
 
-      console.log("Response status:", response.status);
-      console.log("Response ok:", response.ok);
-      
       const responseText = await response.text();
-      console.log("Response text:", responseText);
-      
       let responseData;
       try {
         responseData = JSON.parse(responseText);
@@ -134,10 +122,8 @@ export default function PortalProspectDetail() {
         console.error("Failed to parse response:", e);
         responseData = { error: "Invalid response from server" };
       }
-      console.log("Parsed response data:", responseData);
 
       if (response.ok) {
-        console.log("Update successful!");
         setIsEditing(false);
         await loadProspect();
         alert("Prospect updated successfully!");
@@ -158,9 +144,8 @@ export default function PortalProspectDetail() {
     if (!confirm("Are you sure you want to delete this prospect?")) return;
 
     try {
-      const response = await fetch(`/api/portal/prospects/${id}`, {
+      const response = await apiFetch(`/api/portal/prospects/${id}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {
@@ -173,10 +158,9 @@ export default function PortalProspectDetail() {
 
   const handleAddNote = async () => {
     try {
-      const response = await fetch(`/api/portal/prospects/${id}/notes`, {
+      const response = await apiFetch(`/api/portal/prospects/${id}/notes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(newNote),
       });
 
@@ -194,9 +178,8 @@ export default function PortalProspectDetail() {
     if (!confirm("Delete this note?")) return;
 
     try {
-      const response = await fetch(`/api/portal/prospect-notes/${noteId}`, {
+      const response = await apiFetch(`/api/portal/prospect-notes/${noteId}`, {
         method: "DELETE",
-        credentials: "include",
       });
 
       if (response.ok) {
