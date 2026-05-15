@@ -17,7 +17,7 @@ export default function BlizzardIntro({ onComplete }: { onComplete: () => void }
 
   useEffect(() => {
     // Play wind sound
-    const audio = new Audio("https://019b7617-c3ef-76fd-99cc-e86fca2684d0.mochausercontent.com/dragon-studio-blizzard-wind-463217.mp3");
+    const audio = new Audio("https://qbtfofrikbawvjwpmbob.supabase.co/storage/v1/object/public/assets/dragon-studio-blizzard-wind-463217.mp3");
     audio.volume = 0.6;
     audio.play().catch(() => {});
 
@@ -195,7 +195,7 @@ export default function BlizzardIntro({ onComplete }: { onComplete: () => void }
             style={{ animation: "pulse 1s ease-in-out infinite" }}
           />
           <img
-            src="https://019b7617-c3ef-76fd-99cc-e86fca2684d0.mochausercontent.com/Noreasters-Snow-Logo-No-Background.png"
+            src="https://qbtfofrikbawvjwpmbob.supabase.co/storage/v1/object/public/assets/Noreasters%20Snow%20Logo%20No%20Background.png"
             alt="Cape Ann Nor'easters"
             className="relative w-80 h-80 md:w-[500px] md:h-[500px] object-contain drop-shadow-2xl"
             style={{

@@ -19,7 +19,7 @@ const emailTemplate = (content: string) => `
 
 const emailHeader = (title: string) => `
 <div style="padding: 32px 40px 24px 40px; border-bottom: 1px solid #e4e4e7;">
-  <img src="https://019b7617-c3ef-76fd-99cc-e86fca2684d0.mochausercontent.com/Nor'easters-Snow-Logo-No-Background.png" alt="Cape Ann Nor'easters" style="width: 60px; height: 60px; margin-bottom: 16px;">
+  <img src="https://qbtfofrikbawvjwpmbob.supabase.co/storage/v1/object/public/assets/Noreasters%20Snow%20Logo%20No%20Background.png" alt="Cape Ann Nor'easters" style="width: 60px; height: 60px; margin-bottom: 16px;">
   <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #18181b;">${title}</h1>
 </div>
 `;

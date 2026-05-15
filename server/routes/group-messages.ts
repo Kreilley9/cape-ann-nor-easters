@@ -7,7 +7,7 @@ import { getUserDisplayName } from "../lib/activity-logger.ts";
 
 export const groupMessagesRouter = Router();
 
-const LOGO_URL = "https://019b7617-c3ef-76fd-99cc-e86fca2684d0.mochausercontent.com/Nor'easters-Snow-Logo-No-Background.png";
+const LOGO_URL = "https://qbtfofrikbawvjwpmbob.supabase.co/storage/v1/object/public/assets/Noreasters%20Snow%20Logo%20No%20Background.png";
 
 function buildGroupEmailHtml(subject: string, content: string) {
   const formattedContent = content.replace(/\n/g, "<br>");

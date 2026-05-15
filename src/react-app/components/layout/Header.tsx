@@ -45,7 +45,7 @@ export default function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
             <img
-              src="https://019b7617-c3ef-76fd-99cc-e86fca2684d0.mochausercontent.com/Noreasters-Snow-Logo-No-Background.png"
+              src="https://qbtfofrikbawvjwpmbob.supabase.co/storage/v1/object/public/assets/Noreasters%20Snow%20Logo%20No%20Background.png"
               alt="Cape Ann Nor'easters"
               className="h-16 w-auto"
             />

@@ -250,7 +250,7 @@ export default function HomePage() {
             <div className="text-center lg:text-left flex flex-col items-center lg:items-start">
               <div className="mb-6">
                 <img
-                  src="https://019b7617-c3ef-76fd-99cc-e86fca2684d0.mochausercontent.com/Cape-Ann-Logo-Written.png"
+                  src="https://qbtfofrikbawvjwpmbob.supabase.co/storage/v1/object/public/assets/Cape%20Ann%20Logo%20Written.png"
                   alt="Cape Ann Nor'easters"
                   className="w-64 md:w-80 h-auto"
                 />
@@ -294,7 +294,7 @@ export default function HomePage() {
               <div className="relative">
                 <div className="absolute -inset-8 bg-[#007ba7]/20 rounded-full blur-3xl animate-pulse"></div>
                 <img
-                  src="https://019b7617-c3ef-76fd-99cc-e86fca2684d0.mochausercontent.com/Noreasters-Snow-Logo-No-Background.png"
+                  src="https://qbtfofrikbawvjwpmbob.supabase.co/storage/v1/object/public/assets/Noreasters%20Snow%20Logo%20No%20Background.png"
                   alt="Cape Ann Nor'easters"
                   className="relative w-96 h-96 object-contain drop-shadow-2xl"
                 />

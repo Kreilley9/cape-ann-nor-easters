@@ -10,7 +10,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <img
-                src="https://019b7617-c3ef-76fd-99cc-e86fca2684d0.mochausercontent.com/Nor'easters.jpg"
+                src="https://qbtfofrikbawvjwpmbob.supabase.co/storage/v1/object/public/assets/Nor'easters.jpg"
                 alt="Cape Ann Nor'easters"
                 className="h-12 w-auto"
               />
